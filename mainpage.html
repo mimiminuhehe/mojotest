@@ -183,11 +183,25 @@ html, body {
 const launchParams = new URLSearchParams(window.location.search);
 const LAUNCH_VERSION = launchParams.get("version") || "1.12.2";
 const LAUNCH_JSON_URL = launchParams.get("json");
-const LAUNCH_USERNAME = launchParams.get("username") || "Player";
 
-/* 안정적인 CORS 프록시 우회 함수 */
-function getProxiedUrl(url) {
-    return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+/* 여러 프록시 후보를 번갈아 시도하는 fetch 함수 */
+async function fetchWithFallback(targetUrl) {
+    const proxies = [
+        url => url, // 1순위: 직접 요청 (CORS 제한 해제 브라우저용)
+        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+    ];
+
+    for (let i = 0; i < proxies.length; i++) {
+        try {
+            const proxied = proxies[i](targetUrl);
+            const res = await fetch(proxied);
+            if (res.ok) return res;
+        } catch (e) {
+            console.warn(`프록시 ${i + 1}번 실패, 다음 시도...`);
+        }
+    }
+    throw new Error("모든 다운로드 경로 요청에 실패했습니다.");
 }
 
 let currentVersionData = null;
@@ -210,9 +224,6 @@ function updateOverlay(text, show = true) {
     overlay.style.display = show ? "flex" : "none";
 }
 
-/* =========================================================
-   1. Client 및 Manifest 다운로드 (CORS 오류 수정)
-========================================================= */
 async function prepareFiles() {
     log(`[시스템] ${LAUNCH_VERSION} 리소스 다운로드를 시작합니다.`, "info");
     updateOverlay("버전 메타데이터 다운로드 중...");
@@ -220,43 +231,31 @@ async function prepareFiles() {
     try {
         let versionJsonUrl = LAUNCH_JSON_URL;
 
-        // 전달받은 JSON URL이 없다면 공식 Manifest에서 검색
         if (!versionJsonUrl) {
-            log("공식 Manifest에서 버전 정보 경로 검색 중...", "info");
+            log("공식 Manifest 검색 중...", "info");
             const manifestUrl = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
-            
-            const manifestRes = await fetch(getProxiedUrl(manifestUrl));
-            if (!manifestRes.ok) throw new Error(`Manifest 불러오기 실패 (HTTP ${manifestRes.status})`);
-            
+            const manifestRes = await fetchWithFallback(manifestUrl);
             const manifestData = await manifestRes.json();
-            const versionObj = manifestData.versions.find(v => v.id === LAUNCH_VERSION);
             
-            if (!versionObj) throw new Error(`${LAUNCH_VERSION} 버전을 Manifest에서 찾지 못했습니다.`);
+            const versionObj = manifestData.versions.find(v => v.id === LAUNCH_VERSION);
+            if (!versionObj) throw new Error(`${LAUNCH_VERSION} 버전을 찾지 못했습니다.`);
             versionJsonUrl = versionObj.url;
         }
 
-        // 1. 해당 버전의 version.json 가져오기
-        log(`Version JSON 요청: ${versionJsonUrl}`, "info");
-        const versionRes = await fetch(getProxiedUrl(versionJsonUrl));
-        if (!versionRes.ok) throw new Error(`Version JSON 요청 실패 (HTTP ${versionRes.status})`);
-        
+        log(`Version JSON 요청 중...`, "info");
+        const versionRes = await fetchWithFallback(versionJsonUrl);
         currentVersionData = await versionRes.json();
         log("Version.json 읽기 완료!", "success");
 
         updateOverlay("Client JAR 다운로드 중...");
         
-        // 2. Client JAR URL 추출
         const clientJarUrl = currentVersionData.downloads?.client?.url;
         if (!clientJarUrl) throw new Error("Client JAR 다운로드 링크가 없습니다.");
 
-        // 3. Client JAR 다운로드
-        log(`Client JAR 받아오는 중: ${clientJarUrl}`, "info");
-        const jarRes = await fetch(getProxiedUrl(clientJarUrl));
-        if (!jarRes.ok) throw new Error(`Client JAR 다운로드 실패 (HTTP ${jarRes.status})`);
-
+        log(`Client JAR 받아오는 중...`, "info");
+        const jarRes = await fetchWithFallback(clientJarUrl);
         const jarData = await jarRes.arrayBuffer();
         
-        // 4. Cache Storage에 파일 보관
         if ('caches' in window) {
             const cache = await caches.open("mojocraft-runtime");
             const responseToCache = new Response(jarData, {
@@ -278,9 +277,6 @@ async function prepareFiles() {
     }
 }
 
-/* =========================================================
-   2. CheerpJ JVM 구동
-========================================================= */
 async function launchJavaMinecraft() {
     if (!isReadyToLaunch) return;
 
