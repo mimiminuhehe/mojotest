@@ -1,0 +1,224 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+}
+
+.launcher {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  height: 60px;
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #181818;
+  border-bottom: 1px solid #303030;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.logo span {
+  margin-left: 6px;
+  color: #65d46e;
+}
+
+.status {
+  color: #aaa;
+  font-size: 14px;
+}
+
+.game {
+  position: relative;
+  flex: 1;
+
+  background:
+    linear-gradient(
+      #71b7e6 0%,
+      #9bd4f5 55%,
+      #4b8f3c 55%,
+      #39732e 100%
+    );
+
+  overflow: hidden;
+}
+
+#gameCanvas {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+}
+
+.loading {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: min(90%, 420px);
+
+  padding: 30px;
+
+  text-align: center;
+
+  background: rgba(15, 15, 15, 0.9);
+
+  border-radius: 12px;
+}
+
+.loading h2 {
+  margin: 15px 0 8px;
+}
+
+.loading p {
+  margin: 0 0 20px;
+
+  color: #aaa;
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+
+  margin: auto;
+
+  border: 4px solid #444;
+  border-top-color: #65d46e;
+
+  border-radius: 50%;
+
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progress {
+  width: 100%;
+  height: 8px;
+
+  background: #333;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+}
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+
+  background: #65d46e;
+
+  transition: width 0.2s;
+}
+
+.controls {
+  height: 75px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 15px;
+
+  background: #181818;
+}
+
+select {
+  margin-left: 8px;
+
+  padding: 10px;
+
+  color: white;
+  background: #292929;
+
+  border: 1px solid #444;
+  border-radius: 6px;
+}
+
+button {
+  padding: 11px 25px;
+
+  border: 0;
+  border-radius: 6px;
+
+  background: #65d46e;
+
+  color: #111;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+button:hover {
+  background: #7be982;
+}
+
+.game-ui {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+}
+
+.crosshair {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  font-size: 28px;
+  font-weight: bold;
+
+  text-shadow: 1px 1px 3px black;
+}
+
+.debug {
+  position: absolute;
+
+  top: 10px;
+  left: 10px;
+
+  padding: 8px;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.hidden {
+  display: none;
+}
