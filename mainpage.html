@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>MojoCraft Core Engine</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -16,746 +22,644 @@
 html,
 body {
     width: 100%;
-    height: 100%;
+    min-height: 100%;
 }
 
 body {
+
     font-family:
         "Segoe UI",
-        Tahoma,
-        Geneva,
-        Verdana,
+        Arial,
         sans-serif;
 
-    background: #101014;
+    background:
+        linear-gradient(
+            135deg,
+            #0e0e10,
+            #17171b
+        );
+
     color: #fff;
-
-    overflow: hidden;
-}
-
-
-/* =========================================
-   전체
-   ========================================= */
-
-#app {
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-}
-
-
-/* =========================================
-   상단
-   ========================================= */
-
-#header {
-    height: 70px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 24px;
-
-    background: #151519;
-
-    border-bottom:
-        1px solid #2a2a30;
-}
-
-.logo {
-    font-size: 21px;
-
-    font-weight: 700;
-
-    color: #76ff03;
-}
-
-.engine-status {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    font-size: 13px;
-
-    color: #999;
-}
-
-.status-dot {
-    width: 9px;
-    height: 9px;
-
-    border-radius: 50%;
-
-    background: #777;
-}
-
-.status-dot.ready {
-    background: #76ff03;
-
-    box-shadow:
-        0 0 8px rgba(118,255,3,0.5);
-}
-
-.status-dot.error {
-    background: #f44336;
-}
-
-
-/* =========================================
-   메인
-   ========================================= */
-
-#main {
-    flex: 1;
-
-    min-height: 0;
-
-    display: flex;
-}
-
-
-/* =========================================
-   왼쪽 콘텐츠
-   ========================================= */
-
-#content {
-    flex: 1;
-
-    min-width: 0;
-
-    overflow-y: auto;
 
     padding: 24px;
 }
 
 
-/* =========================================
-   버전 카드
-   ========================================= */
+/* =========================
+   전체
+========================= */
 
-.card {
-    background: #18181d;
+.container {
 
-    border:
-        1px solid #2c2c33;
+    max-width: 1200px;
 
-    border-radius: 12px;
+    margin: 0 auto;
 
-    padding: 20px;
-
-    margin-bottom: 18px;
-}
-
-.card-title {
-    font-size: 17px;
-
-    font-weight: 700;
-
-    margin-bottom: 6px;
-}
-
-.card-description {
-    font-size: 12px;
-
-    color: #888;
-
-    line-height: 1.5;
-
-    margin-bottom: 18px;
 }
 
 
-/* =========================================
-   버전 정보
-   ========================================= */
+/* =========================
+   헤더
+========================= */
 
-.version-header {
+.header {
+
     display: flex;
 
     align-items: center;
 
     justify-content: space-between;
 
-    gap: 15px;
+    gap: 20px;
+
+    margin-bottom: 20px;
+
 }
 
-.version-name {
-    font-size: 30px;
+.title {
+
+    font-size: 28px;
+
+    font-weight: 800;
+
+}
+
+.subtitle {
+
+    margin-top: 5px;
+
+    color: #999;
+
+    font-size: 13px;
+
+}
+
+.back-btn {
+
+    border: 1px solid #3b3b40;
+
+    background: #222226;
+
+    color: #fff;
+
+    padding: 10px 14px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
 
     font-weight: 700;
 
-    color: #fff;
 }
 
-.version-type {
-    padding: 5px 9px;
+.back-btn:hover {
 
-    border-radius: 5px;
+    background: #2c2c31;
 
-    background: #25252b;
+}
 
-    color: #aaa;
+
+/* =========================
+   버전 카드
+========================= */
+
+.version-card {
+
+    background: #202024;
+
+    border: 1px solid #333338;
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+    margin-bottom: 18px;
+
+}
+
+.version-label {
+
+    color: #999;
+
+    font-size: 12px;
+
+    margin-bottom: 5px;
+
+}
+
+.version-name {
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    color: #76ff03;
+
+}
+
+.version-json {
+
+    margin-top: 8px;
+
+    color: #777;
+
+    font-family: monospace;
 
     font-size: 11px;
+
+    word-break: break-all;
+
 }
 
-.version-details {
+
+/* =========================
+   버튼
+========================= */
+
+.actions {
+
     display: grid;
 
     grid-template-columns:
         repeat(3, 1fr);
 
-    gap: 10px;
+    gap: 12px;
 
-    margin-top: 18px;
+    margin-bottom: 20px;
+
 }
 
-.detail-box {
-    background: #111114;
+.action-btn {
 
-    border:
-        1px solid #29292f;
+    padding: 14px;
+
+    border: 1px solid #3b3b40;
 
     border-radius: 8px;
 
-    padding: 12px;
-}
+    background: #252529;
 
-.detail-label {
-    color: #777;
+    color: #fff;
 
-    font-size: 11px;
-
-    margin-bottom: 5px;
-}
-
-.detail-value {
-    color: #ddd;
-
-    font-size: 13px;
-
-    word-break: break-word;
-}
-
-
-/* =========================================
-   다운로드 버튼
-   ========================================= */
-
-.button-row {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 10px;
-
-    margin-top: 18px;
-}
-
-button {
-    border: none;
-
-    border-radius: 7px;
-
-    padding: 11px 14px;
-
-    font-weight: 600;
+    font-weight: 700;
 
     cursor: pointer;
 
-    transition:
-        background 0.2s,
-        opacity 0.2s,
-        transform 0.1s;
 }
 
-button:active {
-    transform: scale(0.98);
+.action-btn:hover {
+
+    background: #303035;
+
 }
 
-button:disabled {
-    opacity: 0.4;
+.action-btn:disabled {
+
+    opacity: 0.5;
 
     cursor: not-allowed;
-}
 
-.btn-primary {
-    background: #76ff03;
-
-    color: #000;
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: #64dd17;
-}
-
-.btn-secondary {
-    background: #2b2b31;
-
-    color: #fff;
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background: #38383f;
-}
-
-.btn-danger {
-    background: #5a2020;
-
-    color: #fff;
-}
-
-.btn-danger:hover:not(:disabled) {
-    background: #742626;
 }
 
 
-/* =========================================
+/* =========================
    진행률
-   ========================================= */
+========================= */
 
-.progress-container {
-    margin-top: 18px;
+.progress-card {
+
+    background: #202024;
+
+    border: 1px solid #333338;
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+    margin-bottom: 20px;
+
 }
 
-.progress-background {
+.progress-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+
+}
+
+.progress-title {
+
+    font-weight: 700;
+
+}
+
+#progress-percent {
+
+    color: #76ff03;
+
+    font-weight: 800;
+
+}
+
+.progress {
+
     width: 100%;
 
-    height: 10px;
-
-    background: #2b2b31;
+    height: 12px;
 
     border-radius: 20px;
 
     overflow: hidden;
+
+    background: #101012;
+
 }
 
-#progress-bar {
+.progress-bar {
+
     width: 0%;
 
     height: 100%;
 
     background: #76ff03;
 
-    transition:
-        width 0.2s ease;
-}
+    transition: width 0.2s ease;
 
-.progress-info {
-    display: flex;
-
-    justify-content: space-between;
-
-    margin-top: 7px;
-
-    font-size: 11px;
-
-    color: #777;
 }
 
 
-/* =========================================
-   통계
-   ========================================= */
+/* =========================
+   단계 카드
+========================= */
 
-.stats {
+.stages {
+
     display: grid;
 
     grid-template-columns:
         repeat(4, 1fr);
 
-    gap: 10px;
+    gap: 12px;
+
+    margin-bottom: 20px;
+
 }
 
-.stat {
-    background: #111114;
+.stage {
 
-    border:
-        1px solid #29292f;
+    padding: 15px;
 
-    border-radius: 8px;
+    border-radius: 10px;
 
-    padding: 14px;
+    background: #202024;
+
+    border: 1px solid #333338;
+
 }
 
-.stat-label {
-    color: #777;
+.stage-title {
+
+    font-weight: 800;
+
+    margin-bottom: 6px;
+
+}
+
+.stage-status {
+
+    font-size: 12px;
+
+    color: #888;
+
+}
+
+.stage.running {
+
+    border-color: #aaa;
+
+}
+
+.stage.success {
+
+    border-color: #76ff03;
+
+}
+
+.stage.success .stage-status {
+
+    color: #76ff03;
+
+}
+
+.stage.error {
+
+    border-color: #ff4444;
+
+}
+
+.stage.error .stage-status {
+
+    color: #ff5555;
+
+}
+
+
+/* =========================
+   정보
+========================= */
+
+.info-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+
+}
+
+.info-card {
+
+    background: #202024;
+
+    border: 1px solid #333338;
+
+    border-radius: 10px;
+
+    padding: 15px;
+
+}
+
+.info-label {
+
+    color: #888;
 
     font-size: 11px;
 
     margin-bottom: 5px;
+
 }
 
-.stat-value {
-    color: #ddd;
-
-    font-size: 15px;
-
-    font-weight: 600;
-}
-
-
-/* =========================================
-   오른쪽 로그
-   ========================================= */
-
-#right-panel {
-    width: 390px;
-
-    flex-shrink: 0;
-
-    background: #0d0d10;
-
-    border-left:
-        1px solid #29292f;
-
-    display: flex;
-
-    flex-direction: column;
-}
-
-.panel-title {
-    height: 52px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-
-    padding: 0 15px;
-
-    border-bottom:
-        1px solid #29292f;
+.info-value {
 
     font-size: 14px;
 
     font-weight: 700;
+
+    word-break: break-word;
+
+}
+
+
+/* =========================
+   로그
+========================= */
+
+.log-card {
+
+    background: #0d0d0f;
+
+    border: 1px solid #29292e;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+}
+
+.log-header {
+
+    padding: 12px 14px;
+
+    background: #18181b;
+
+    border-bottom: 1px solid #29292e;
+
+    font-weight: 700;
+
 }
 
 #log {
-    flex: 1;
 
-    min-height: 0;
+    height: 300px;
+
+    padding: 14px;
 
     overflow-y: auto;
 
-    padding: 12px;
-
     font-family: monospace;
 
-    font-size: 11px;
+    font-size: 12px;
 
-    line-height: 1.6;
 }
 
 .log {
-    margin-bottom: 4px;
 
-    word-break: break-word;
+    margin-bottom: 5px;
+
+    line-height: 1.45;
+
 }
 
 .log.info {
-    color: #999;
+
+    color: #aaa;
+
 }
 
 .log.success {
-    color: #76ff03;
-}
 
-.log.warning {
-    color: #ffc107;
+    color: #6cff55;
+
 }
 
 .log.error {
-    color: #f44336;
+
+    color: #ff5555;
+
 }
 
 
-/* =========================================
-   하단
-   ========================================= */
-
-#footer {
-    height: 45px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding: 0 18px;
-
-    background: #151519;
-
-    border-top:
-        1px solid #2a2a30;
-
-    color: #666;
-
-    font-size: 11px;
-}
-
-
-/* =========================================
+/* =========================
    반응형
-   ========================================= */
+========================= */
 
-@media (max-width: 900px) {
-
-    #right-panel {
-        width: 320px;
-    }
-
-    .version-details {
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-
-    .stats {
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-}
-
-
-@media (max-width: 700px) {
+@media (max-width: 850px) {
 
     body {
-        overflow: auto;
+        padding: 12px;
     }
 
-    #app {
-        min-height: 100%;
-        height: auto;
+    .actions {
+
+        grid-template-columns:
+            1fr;
+
     }
 
-    #main {
+    .stages {
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+    .info-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+@media (max-width: 500px) {
+
+    .header {
+
         flex-direction: column;
-    }
 
-    #content {
-        overflow: visible;
-    }
-
-    #right-panel {
-        width: 100%;
-
-        height: 300px;
-    }
-
-    .version-header {
         align-items: flex-start;
 
-        flex-direction: column;
     }
 
-    .version-details {
-        grid-template-columns: 1fr;
+    .stages {
+
+        grid-template-columns:
+            1fr;
+
     }
+
 }
-</style>
-</head>
 
+</style>
+
+</head>
 
 <body>
 
-<div id="app">
+<div class="container">
+
+    <!-- =========================
+         헤더
+    ========================== -->
+
+    <header class="header">
+
+        <div>
+
+            <div class="title">
+                MojoCraft Core Engine
+            </div>
+
+            <div class="subtitle">
+                Minecraft Java Edition 파일 준비 시스템
+            </div>
+
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goBack()"
+        >
+            ← 런처로 돌아가기
+        </button>
+
+    </header>
 
 
-<!-- =========================================
-     HEADER
-     ========================================= -->
+    <!-- =========================
+         선택 버전
+    ========================== -->
 
-<header id="header">
+    <section class="version-card">
 
-    <div class="logo">
-        MojoCraft Core Engine
-    </div>
-
-    <div class="engine-status">
-
-        <div
-            id="status-dot"
-            class="status-dot"
-        ></div>
-
-        <span id="engine-status-text">
-            초기화 중...
-        </span>
-
-    </div>
-
-</header>
-
-
-
-<!-- =========================================
-     MAIN
-     ========================================= -->
-
-<div id="main">
-
-
-<!-- =========================================
-     CONTENT
-     ========================================= -->
-
-<main id="content">
-
-
-<!-- 버전 정보 -->
-
-<section class="card">
-
-    <div class="card-title">
-        Minecraft Java Edition
-    </div>
-
-    <div class="card-description">
-        런처에서 전달받은 Minecraft 버전의
-        공식 Mojang 데이터를 분석합니다.
-    </div>
-
-
-    <div class="version-header">
+        <div class="version-label">
+            선택된 Minecraft 버전
+        </div>
 
         <div
             id="version-name"
             class="version-name"
         >
-            -
+            불러오는 중...
         </div>
 
         <div
-            id="version-type"
-            class="version-type"
+            id="version-json"
+            class="version-json"
         >
-            -
+            version.json URL 확인 중...
         </div>
 
-    </div>
+    </section>
 
 
-    <div class="version-details">
+    <!-- =========================
+         다운로드 버튼
+    ========================== -->
 
-        <div class="detail-box">
-
-            <div class="detail-label">
-                Release Time
-            </div>
-
-            <div
-                id="release-time"
-                class="detail-value"
-            >
-                -
-            </div>
-
-        </div>
-
-
-        <div class="detail-box">
-
-            <div class="detail-label">
-                Client
-            </div>
-
-            <div
-                id="client-info"
-                class="detail-value"
-            >
-                -
-            </div>
-
-        </div>
-
-
-        <div class="detail-box">
-
-            <div class="detail-label">
-                Asset Index
-            </div>
-
-            <div
-                id="asset-info"
-                class="detail-value"
-            >
-                -
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="button-row">
+    <section class="actions">
 
         <button
-            id="read-version-btn"
-            class="btn-secondary"
+            id="manifest-btn"
+            class="action-btn"
             onclick="loadVersionData()"
         >
             버전 정보 읽기
         </button>
 
-
         <button
             id="client-btn"
-            class="btn-primary"
+            class="action-btn"
             onclick="downloadClient()"
             disabled
         >
             Client 다운로드
         </button>
 
-
         <button
             id="libraries-btn"
-            class="btn-secondary"
+            class="action-btn"
             onclick="downloadLibraries()"
             disabled
         >
             Libraries 다운로드
         </button>
 
+    </section>
+
+
+    <section class="actions">
 
         <button
             id="assets-btn"
-            class="btn-secondary"
+            class="action-btn"
             onclick="downloadAssets()"
             disabled
         >
             Assets 다운로드
         </button>
 
-    </div>
+    </section>
 
 
-    <div class="progress-container">
+    <!-- =========================
+         진행률
+    ========================== -->
 
-        <div class="progress-background">
+    <section class="progress-card">
 
-            <div id="progress-bar"></div>
+        <div class="progress-header">
 
-        </div>
-
-        <div class="progress-info">
-
-            <span id="progress-text">
-                대기 중
+            <span class="progress-title">
+                다운로드 진행률
             </span>
 
             <span id="progress-percent">
@@ -764,241 +668,203 @@ button:disabled {
 
         </div>
 
-    </div>
+        <div class="progress">
 
-</section>
+            <div
+                id="progress-bar"
+                class="progress-bar"
+            ></div>
 
+        </div>
 
-
-<!-- 통계 -->
-
-<section class="card">
-
-    <div class="card-title">
-        Core Engine 상태
-    </div>
-
-    <div class="card-description">
-        현재 브라우저 저장소에 기록된
-        Minecraft 파일 상태입니다.
-    </div>
+    </section>
 
 
-    <div class="stats">
+    <!-- =========================
+         단계
+    ========================== -->
 
-        <div class="stat">
+    <section class="stages">
 
-            <div class="stat-label">
-                Version
+        <div
+            id="stage-manifest"
+            class="stage"
+        >
+
+            <div class="stage-title">
+                A-1 Manifest
             </div>
 
             <div
-                id="stat-version"
-                class="stat-value"
+                id="stage-manifest-status"
+                class="stage-status"
             >
-                -
+                대기 중
             </div>
 
         </div>
 
 
-        <div class="stat">
+        <div
+            id="stage-client"
+            class="stage"
+        >
 
-            <div class="stat-label">
+            <div class="stage-title">
+                A-2 Client
+            </div>
+
+            <div
+                id="stage-client-status"
+                class="stage-status"
+            >
+                대기 중
+            </div>
+
+        </div>
+
+
+        <div
+            id="stage-libraries"
+            class="stage"
+        >
+
+            <div class="stage-title">
+                A-3 Libraries
+            </div>
+
+            <div
+                id="stage-libraries-status"
+                class="stage-status"
+            >
+                대기 중
+            </div>
+
+        </div>
+
+
+        <div
+            id="stage-assets"
+            class="stage"
+        >
+
+            <div class="stage-title">
+                A-4 Assets
+            </div>
+
+            <div
+                id="stage-assets-status"
+                class="stage-status"
+            >
+                대기 중
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         정보
+    ========================== -->
+
+    <section class="info-grid">
+
+        <div class="info-card">
+
+            <div class="info-label">
+                Client
+            </div>
+
+            <div
+                id="client-info"
+                class="info-value"
+            >
+                확인 전
+            </div>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <div class="info-label">
                 Libraries
             </div>
 
             <div
-                id="stat-libraries"
-                class="stat-value"
+                id="libraries-info"
+                class="info-value"
             >
-                0
+                확인 전
             </div>
 
         </div>
 
 
-        <div class="stat">
+        <div class="info-card">
 
-            <div class="stat-label">
+            <div class="info-label">
                 Assets
             </div>
 
             <div
-                id="stat-assets"
-                class="stat-value"
+                id="assets-info"
+                class="info-value"
             >
-                0
+                확인 전
             </div>
 
         </div>
 
+    </section>
 
-        <div class="stat">
 
-            <div class="stat-label">
-                Cache
-            </div>
+    <!-- =========================
+         로그
+    ========================== -->
 
-            <div
-                id="stat-cache"
-                class="stat-value"
-            >
-                확인 중
-            </div>
+    <section class="log-card">
+
+        <div class="log-header">
+            Engine Log
+        </div>
+
+        <div id="log">
 
         </div>
 
-    </div>
-
-</section>
-
-
-
-<!-- 엔진 단계 -->
-
-<section class="card">
-
-    <div class="card-title">
-        실행 단계
-    </div>
-
-    <div class="card-description">
-        현재 MojoCraft Core Engine의 진행 단계입니다.
-    </div>
-
-
-    <div class="version-details">
-
-        <div class="detail-box">
-
-            <div class="detail-label">
-                A-1
-            </div>
-
-            <div
-                id="stage-manifest"
-                class="detail-value"
-            >
-                대기
-            </div>
-
-        </div>
-
-
-        <div class="detail-box">
-
-            <div class="detail-label">
-                A-2
-            </div>
-
-            <div
-                id="stage-client"
-                class="detail-value"
-            >
-                대기
-            </div>
-
-        </div>
-
-
-        <div class="detail-box">
-
-            <div class="detail-label">
-                A-3
-            </div>
-
-            <div
-                id="stage-libraries"
-                class="detail-value"
-            >
-                대기
-            </div>
-
-        </div>
-
-
-        <div class="detail-box">
-
-            <div class="detail-label">
-                A-4
-            </div>
-
-            <div
-                id="stage-assets"
-                class="detail-value"
-            >
-                대기
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-</main>
-
-
-
-<!-- =========================================
-     LOG PANEL
-     ========================================= -->
-
-<aside id="right-panel">
-
-    <div class="panel-title">
-        Core Engine Log
-    </div>
-
-    <div id="log"></div>
-
-</aside>
-
+    </section>
 
 </div>
-
-
-
-<!-- =========================================
-     FOOTER
-     ========================================= -->
-
-<footer id="footer">
-
-    <span>
-        MojoCraft Web
-    </span>
-
-    <span>
-        Core Engine A
-    </span>
-
-</footer>
-
-
-</div>
-
 
 
 <script>
 
-/* =========================================
-   설정
-   ========================================= */
+/* =========================================================
+   MojoCraft Core Engine
+========================================================= */
+
+
+/* =========================================================
+   공식 Minecraft Manifest
+========================================================= */
 
 const VERSION_MANIFEST_URL =
-    "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json";
+    "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 
+
+/* =========================================================
+   Cache Storage
+========================================================= */
 
 const CACHE_NAME =
-    "mojocraft-minecraft-files-v1";
+    "mojocraft-minecraft-files-v2";
 
 
-/* =========================================
-   런처에서 전달받은 정보
-   ========================================= */
+/* =========================================================
+   URL 파라미터
+========================================================= */
 
 const launchParams =
     new URLSearchParams(
@@ -1007,562 +873,185 @@ const launchParams =
 
 
 const LAUNCH_VERSION =
-    launchParams.get("version");
+    launchParams.get(
+        "version"
+    );
 
 
 const LAUNCH_JSON_URL =
-    launchParams.get("json");
+    launchParams.get(
+        "json"
+    );
 
 
 const LAUNCH_USERNAME =
-    launchParams.get("username") ||
-    "Player";
+    launchParams.get(
+        "username"
+    ) || "Player";
 
 
 const LAUNCH_UUID =
-    launchParams.get("uuid") ||
+    launchParams.get(
+        "uuid"
+    ) ||
     "00000000000000000000000000000000";
 
 
-/* =========================================
-   현재 Minecraft 데이터
-   ========================================= */
+/* =========================================================
+   현재 데이터
+========================================================= */
 
 let currentVersion = null;
 
 let currentVersionData = null;
 
-let librariesList = [];
 
-let assetsList = [];
-
-
-/* =========================================
+/* =========================================================
    로그
-   ========================================= */
+========================================================= */
 
 function log(
     message,
     type = "info"
 ) {
 
-    const logPanel =
+    const element =
         document.getElementById(
             "log"
         );
 
-
-    const entry =
+    const line =
         document.createElement(
             "div"
         );
 
-
-    entry.className =
+    line.className =
         `log ${type}`;
 
+    const time =
+        new Date().toLocaleTimeString();
 
-    entry.textContent =
-        `[${new Date().toLocaleTimeString()}] ${message}`;
+    line.textContent =
+        `[${time}] ${message}`;
 
-
-    logPanel.appendChild(
-        entry
+    element.appendChild(
+        line
     );
 
-
-    logPanel.scrollTop =
-        logPanel.scrollHeight;
-
+    element.scrollTop =
+        element.scrollHeight;
 }
 
 
-/* =========================================
-   상태 표시
-   ========================================= */
-
-function setEngineStatus(
-    text,
-    state = "ready"
-) {
-
-    const dot =
-        document.getElementById(
-            "status-dot"
-        );
-
-    const status =
-        document.getElementById(
-            "engine-status-text"
-        );
-
-
-    dot.className =
-        "status-dot";
-
-
-    if (
-        state === "ready"
-    ) {
-
-        dot.classList.add(
-            "ready"
-        );
-
-    }
-
-
-    if (
-        state === "error"
-    ) {
-
-        dot.classList.add(
-            "error"
-        );
-
-    }
-
-
-    status.textContent =
-        text;
-
-}
-
-
-/* =========================================
+/* =========================================================
    진행률
-   ========================================= */
+========================================================= */
 
 function setProgress(
-    percent,
-    text
+    value
 ) {
 
-    percent =
+    value =
         Math.max(
             0,
             Math.min(
                 100,
-                percent
+                value
             )
         );
-
 
     document.getElementById(
         "progress-bar"
     ).style.width =
-        `${percent}%`;
-
+        `${value}%`;
 
     document.getElementById(
         "progress-percent"
     ).textContent =
-        `${Math.round(percent)}%`;
-
-
-    document.getElementById(
-        "progress-text"
-    ).textContent =
-        text;
-
+        `${Math.round(value)}%`;
 }
 
 
-/* =========================================
-   바이트
-   ========================================= */
+/* =========================================================
+   단계 상태
+========================================================= */
 
-function formatBytes(
-    bytes
+function setStage(
+    stage,
+    status,
+    state = ""
 ) {
 
-    if (
-        !bytes ||
-        bytes <= 0
-    ) {
+    const card =
+        document.getElementById(
+            `stage-${stage}`
+        );
 
-        return "-";
+    const text =
+        document.getElementById(
+            `stage-${stage}-status`
+        );
 
+    if (!card || !text) {
+        return;
     }
 
-
-    const units = [
-        "B",
-        "KB",
-        "MB",
-        "GB"
-    ];
-
-
-    let index = 0;
-
-    let value = bytes;
-
-
-    while (
-        value >= 1024 &&
-        index <
-            units.length - 1
-    ) {
-
-        value /= 1024;
-
-        index++;
-
-    }
-
-
-    return (
-        value.toFixed(2) +
-        " " +
-        units[index]
+    card.classList.remove(
+        "running",
+        "success",
+        "error"
     );
 
+    if (state) {
+        card.classList.add(
+            state
+        );
+    }
+
+    text.textContent =
+        status;
 }
 
 
-/* =========================================
-   URL 다운로드
-   ========================================= */
+/* =========================================================
+   HTTP fetch helper
+========================================================= */
 
-async function fetchWithError(
+async function fetchJSON(
     url
 ) {
 
-    const response =
-        await fetch(
-            url
-        );
-
-
-    if (
-        !response.ok
-    ) {
-
-        throw new Error(
-            `HTTP ${response.status}`
-        );
-
-    }
-
-
-    return response;
-
-}
-
-
-/* =========================================
-   version.json 찾기
-   ========================================= */
-
-async function resolveVersionUrl() {
-
-    if (
-        LAUNCH_JSON_URL
-    ) {
-
-        return LAUNCH_JSON_URL;
-
-    }
-
-
-    if (
-        !LAUNCH_VERSION
-    ) {
-
-        throw new Error(
-            "Minecraft 버전이 전달되지 않았습니다."
-        );
-
-    }
-
-
     log(
-        "Mojang 공식 version manifest 검색 중...",
+        `JSON 요청: ${url}`,
         "info"
     );
 
-
     const response =
-        await fetchWithError(
-            VERSION_MANIFEST_URL
+        await fetch(
+            url,
+            {
+                method: "GET",
+                cache: "no-store"
+            }
         );
 
-
-    const manifest =
-        await response.json();
-
-
-    const version =
-        manifest.versions.find(
-            item =>
-                item.id ===
-                LAUNCH_VERSION
-        );
-
-
-    if (!version) {
+    if (!response.ok) {
 
         throw new Error(
-            `Minecraft ${LAUNCH_VERSION}을 찾을 수 없습니다.`
+            `HTTP ${response.status} - ${url}`
         );
 
     }
 
-
-    return version.url;
-
+    return await response.json();
 }
 
 
-/* =========================================
-   version.json 읽기
-   ========================================= */
-
-async function loadVersionData() {
-
-    try {
-
-        if (
-            !LAUNCH_VERSION
-        ) {
-
-            throw new Error(
-                "런처에서 Minecraft 버전을 전달받지 못했습니다."
-            );
-
-        }
-
-
-        setEngineStatus(
-            "버전 정보 읽는 중..."
-        );
-
-
-        setProgress(
-            5,
-            "Mojang version.json 주소 확인 중..."
-        );
-
-
-        log(
-            `Minecraft ${LAUNCH_VERSION} 버전 정보 요청`,
-            "info"
-        );
-
-
-        const versionUrl =
-            await resolveVersionUrl();
-
-
-        log(
-            `version.json: ${versionUrl}`,
-            "info"
-        );
-
-
-        setProgress(
-            15,
-            "version.json 다운로드 중..."
-        );
-
-
-        const response =
-            await fetchWithError(
-                versionUrl
-            );
-
-
-        currentVersionData =
-            await response.json();
-
-
-        currentVersion =
-            LAUNCH_VERSION;
-
-
-        /*
-         * 기본 정보
-         */
-
-        const client =
-            currentVersionData.downloads?.client;
-
-
-        const assetIndex =
-            currentVersionData.assetIndex;
-
-
-        librariesList =
-            Array.isArray(
-                currentVersionData.libraries
-            )
-                ? currentVersionData.libraries
-                : [];
-
-
-        /*
-         * 화면 업데이트
-         */
-
-        document.getElementById(
-            "version-name"
-        ).textContent =
-            currentVersion;
-
-
-        document.getElementById(
-            "version-type"
-        ).textContent =
-            currentVersionData.type ||
-            "release";
-
-
-        document.getElementById(
-            "release-time"
-        ).textContent =
-            currentVersionData.releaseTime
-                ? new Date(
-                    currentVersionData.releaseTime
-                ).toLocaleString("ko-KR")
-                : "-";
-
-
-        document.getElementById(
-            "client-info"
-        ).textContent =
-            client
-                ? formatBytes(
-                    client.size
-                )
-                : "없음";
-
-
-        document.getElementById(
-            "asset-info"
-        ).textContent =
-            assetIndex?.id ||
-            "-";
-
-
-        document.getElementById(
-            "stat-version"
-        ).textContent =
-            currentVersion;
-
-
-        document.getElementById(
-            "stat-libraries"
-        ).textContent =
-            librariesList.length;
-
-
-        document.getElementById(
-            "stage-manifest"
-        ).textContent =
-            "완료";
-
-
-        /*
-         * 버튼 활성화
-         */
-
-        document.getElementById(
-            "client-btn"
-        ).disabled =
-            !client;
-
-
-        document.getElementById(
-            "libraries-btn"
-        ).disabled =
-            librariesList.length === 0;
-
-
-        document.getElementById(
-            "assets-btn"
-        ).disabled =
-            !assetIndex;
-
-
-        setProgress(
-            100,
-            "버전 정보 읽기 완료"
-        );
-
-
-        setEngineStatus(
-            "Core Engine 준비 완료"
-        );
-
-
-        log(
-            `Minecraft ${currentVersion} version.json 분석 완료`,
-            "success"
-        );
-
-
-        log(
-            `Libraries: ${librariesList.length}개`,
-            "info"
-        );
-
-
-        if (assetIndex) {
-
-            log(
-                `Asset Index: ${assetIndex.id}`,
-                "info"
-            );
-
-        }
-
-
-        if (client) {
-
-            log(
-                `Client JAR: ${formatBytes(client.size)}`,
-                "success"
-            );
-
-        }
-
-
-        await updateCacheStats();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-
-        setEngineStatus(
-            "오류",
-            "error"
-        );
-
-
-        setProgress(
-            0,
-            "오류 발생"
-        );
-
-
-        log(
-            `버전 정보 읽기 실패: ${error.message}`,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================
-   Cache Storage
-   ========================================= */
-
-async function openMinecraftCache() {
+/* =========================================================
+   Cache
+========================================================= */
+
+async function openCache() {
 
     if (
         !("caches" in window)
@@ -1574,277 +1063,590 @@ async function openMinecraftCache() {
 
     }
 
-
-    return caches.open(
+    return await caches.open(
         CACHE_NAME
+    );
+}
+
+
+/* =========================================================
+   URL 생성
+========================================================= */
+
+function buildCacheKey(
+    path
+) {
+
+    return (
+        `${location.origin}/mojocraft-cache/${path}`
     );
 
 }
 
 
-/* =========================================
-   Client 다운로드
-   ========================================= */
+/* =========================================================
+   스트리밍 다운로드
+========================================================= */
 
-async function downloadClient() {
+async function downloadToCache(
+    url,
+    cacheKey,
+    progressCallback
+) {
+
+    const cache =
+        await openCache();
+
+    const existing =
+        await cache.match(
+            cacheKey
+        );
+
+    if (existing) {
+
+        log(
+            `Cache 사용: ${cacheKey}`,
+            "success"
+        );
+
+        if (progressCallback) {
+            progressCallback(100);
+        }
+
+        return existing;
+
+    }
+
+
+    log(
+        `다운로드 시작: ${url}`,
+        "info"
+    );
+
+
+    const response =
+        await fetch(
+            url
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            `다운로드 실패 HTTP ${response.status}`
+        );
+
+    }
+
+
+    /*
+     * body가 없는 경우
+     */
+
+    if (!response.body) {
+
+        await cache.put(
+            cacheKey,
+            response.clone()
+        );
+
+        if (progressCallback) {
+            progressCallback(100);
+        }
+
+        return response;
+
+    }
+
+
+    const reader =
+        response.body.getReader();
+
+    const contentLength =
+        Number(
+            response.headers.get(
+                "Content-Length"
+            )
+        );
+
+
+    let received = 0;
+
+    const chunks = [];
+
+
+    while (true) {
+
+        const {
+            done,
+            value
+        } =
+            await reader.read();
+
+
+        if (done) {
+            break;
+        }
+
+
+        chunks.push(
+            value
+        );
+
+        received +=
+            value.byteLength;
+
+
+        if (
+            Number.isFinite(
+                contentLength
+            ) &&
+            contentLength > 0
+        ) {
+
+            const percent =
+                received /
+                contentLength *
+                100;
+
+            if (progressCallback) {
+                progressCallback(
+                    percent
+                );
+            }
+
+        }
+
+    }
+
+
+    const blob =
+        new Blob(
+            chunks
+        );
+
+
+    const cachedResponse =
+        new Response(
+            blob,
+            {
+                headers: {
+                    "Content-Type":
+                        response.headers.get(
+                            "Content-Type"
+                        ) ||
+                        "application/octet-stream"
+                }
+            }
+        );
+
+
+    await cache.put(
+        cacheKey,
+        cachedResponse.clone()
+    );
+
+
+    if (progressCallback) {
+        progressCallback(100);
+    }
+
+
+    log(
+        `Cache 저장 완료: ${cacheKey}`,
+        "success"
+    );
+
+
+    return cachedResponse;
+
+}
+
+
+/* =========================================================
+   버전 데이터 로드
+========================================================= */
+
+async function loadVersionData() {
+
+    if (!LAUNCH_VERSION) {
+
+        log(
+            "선택된 Minecraft 버전이 없습니다.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    setStage(
+        "manifest",
+        "읽는 중...",
+        "running"
+    );
+
 
     try {
 
-        if (
-            !currentVersionData
-        ) {
-
-            await loadVersionData();
-
-        }
+        currentVersion =
+            LAUNCH_VERSION;
 
 
-        const client =
-            currentVersionData
-                ?.downloads
-                ?.client;
+        document.getElementById(
+            "version-name"
+        ).textContent =
+            currentVersion;
 
 
-        if (!client?.url) {
-
-            throw new Error(
-                "Client 다운로드 정보가 없습니다."
-            );
-
-        }
-
-
-        const cache =
-            await openMinecraftCache();
-
-
-        log(
-            `Client 다운로드 시작: ${currentVersion}`,
-            "info"
-        );
-
-
-        setProgress(
-            0,
-            "Client 다운로드 준비 중..."
-        );
+        let jsonUrl =
+            LAUNCH_JSON_URL;
 
 
         /*
-         * 이미 캐시에 있는지 확인
+         * index.html에서 JSON URL을
+         * 전달받지 못한 경우
+         *
+         * 공식 manifest에서 다시 찾는다.
          */
 
-        const cacheKey =
-            `minecraft/${currentVersion}/client.jar`;
-
-
-        const cached =
-            await cache.match(
-                cacheKey
-            );
-
-
-        if (cached) {
+        if (!jsonUrl) {
 
             log(
-                "Client가 이미 Cache Storage에 존재합니다.",
-                "success"
+                "전달된 version JSON URL이 없어 공식 manifest에서 검색합니다.",
+                "info"
             );
 
 
-            setProgress(
-                100,
-                "Client 캐시 사용"
-            );
-
-
-            document.getElementById(
-                "stage-client"
-            ).textContent =
-                "완료";
-
-
-            await updateCacheStats();
-
-
-            return;
-
-        }
-
-
-        const response =
-            await fetchWithError(
-                client.url
-            );
-
-
-        const contentLength =
-            Number(
-                response.headers.get(
-                    "content-length"
-                ) || client.size || 0
-            );
-
-
-        /*
-         * 스트리밍 다운로드
-         */
-
-        if (
-            !response.body
-        ) {
-
-            const blob =
-                await response.blob();
-
-
-            await cache.put(
-                cacheKey,
-                new Response(
-                    blob
-                )
-            );
-
-
-            setProgress(
-                100,
-                "Client 다운로드 완료"
-            );
-
-        } else {
-
-            const reader =
-                response.body.getReader();
-
-
-            const chunks = [];
-
-            let received = 0;
-
-
-            while (true) {
-
-                const {
-                    done,
-                    value
-                } =
-                    await reader.read();
-
-
-                if (done) {
-                    break;
-                }
-
-
-                chunks.push(
-                    value
+            const manifest =
+                await fetchJSON(
+                    VERSION_MANIFEST_URL
                 );
 
 
-                received +=
-                    value.length;
+            const version =
+                manifest.versions.find(
+                    item =>
+                        item.id ===
+                        currentVersion
+                );
 
 
-                const percent =
-                    contentLength
-                        ? (
-                            received /
-                            contentLength
-                        ) * 100
-                        : 0;
+            if (!version) {
 
-
-                setProgress(
-                    percent,
-                    `Client 다운로드 중... ${formatBytes(received)}`
+                throw new Error(
+                    `버전 ${currentVersion}을 manifest에서 찾을 수 없습니다.`
                 );
 
             }
 
 
-            const blob =
-                new Blob(
-                    chunks
-                );
+            jsonUrl =
+                version.url;
+
+        }
 
 
-            await cache.put(
-                cacheKey,
-                new Response(
-                    blob,
-                    {
-                        headers: {
-                            "Content-Type":
-                                "application/java-archive"
-                        }
-                    }
-                )
+        if (!jsonUrl) {
+
+            throw new Error(
+                "version JSON URL이 비어 있습니다."
             );
 
         }
 
 
         document.getElementById(
-            "stage-client"
+            "version-json"
         ).textContent =
-            "완료";
+            jsonUrl;
 
 
         log(
-            "Client JAR Cache Storage 저장 완료.",
+            `version.json 읽기: ${jsonUrl}`,
+            "info"
+        );
+
+
+        currentVersionData =
+            await fetchJSON(
+                jsonUrl
+            );
+
+
+        if (
+            !currentVersionData
+        ) {
+
+            throw new Error(
+                "version.json 데이터가 비어 있습니다."
+            );
+
+        }
+
+
+        /*
+         * Client
+         */
+
+        const hasClient =
+            !!(
+                currentVersionData.downloads &&
+                currentVersionData.downloads.client &&
+                currentVersionData.downloads.client.url
+            );
+
+
+        document.getElementById(
+            "client-info"
+        ).textContent =
+            hasClient
+                ? "다운로드 가능"
+                : "Client 정보 없음";
+
+
+        /*
+         * Libraries
+         */
+
+        const libraries =
+            Array.isArray(
+                currentVersionData.libraries
+            )
+                ? currentVersionData.libraries
+                : [];
+
+
+        document.getElementById(
+            "libraries-info"
+        ).textContent =
+            `${libraries.length}개`;
+
+
+        /*
+         * Assets
+         */
+
+        const hasAssets =
+            !!(
+                currentVersionData.assetIndex &&
+                currentVersionData.assetIndex.url
+            );
+
+
+        document.getElementById(
+            "assets-info"
+        ).textContent =
+            hasAssets
+                ? "다운로드 가능"
+                : "Asset Index 없음";
+
+
+        /*
+         * 단계 완료
+         */
+
+        setStage(
+            "manifest",
+            "완료",
             "success"
         );
 
 
-        await updateCacheStats();
+        document.getElementById(
+            "client-btn"
+        ).disabled =
+            !hasClient;
 
 
-    } catch (error) {
+        document.getElementById(
+            "libraries-btn"
+        ).disabled =
+            libraries.length === 0;
+
+
+        document.getElementById(
+            "assets-btn"
+        ).disabled =
+            !hasAssets;
+
+
+        log(
+            `${currentVersion} version.json 로딩 완료`,
+            "success"
+        );
+
+
+        setProgress(
+            10
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        setStage(
+            "manifest",
+            `실패: ${error.message}`,
+            "error"
+        );
+
+
+        log(
+            `Manifest 처리 실패: ${error.message}`,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   Client 다운로드
+========================================================= */
+
+async function downloadClient() {
+
+    if (!currentVersionData) {
+
+        log(
+            "먼저 버전 정보를 읽어주세요.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const client =
+        currentVersionData
+            .downloads
+            ?.client;
+
+
+    if (!client?.url) {
+
+        log(
+            "이 버전에는 Client 다운로드 정보가 없습니다.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    setStage(
+        "client",
+        "다운로드 중...",
+        "running"
+    );
+
+
+    try {
+
+        const cacheKey =
+            buildCacheKey(
+                `minecraft/${currentVersion}/client.jar`
+            );
+
+
+        await downloadToCache(
+            client.url,
+            cacheKey,
+            percent => {
+
+                setProgress(
+                    10 +
+                    percent * 0.30
+                );
+
+            }
+        );
+
+
+        setStage(
+            "client",
+            "완료",
+            "success"
+        );
+
+
+        log(
+            "Minecraft Client 다운로드 완료",
+            "success"
+        );
+
+
+        setProgress(
+            40
+        );
+
+
+    }
+    catch (error) {
+
+        setStage(
+            "client",
+            `실패: ${error.message}`,
+            "error"
+        );
+
 
         log(
             `Client 다운로드 실패: ${error.message}`,
             "error"
         );
 
-
-        document.getElementById(
-            "stage-client"
-        ).textContent =
-            "실패";
-
     }
 
 }
 
 
-/* =========================================
-   Library 다운로드 URL
-   ========================================= */
+/* =========================================================
+   Library artifact
+========================================================= */
 
 function getLibraryArtifact(
     library
 ) {
 
     if (
-        library.downloads?.artifact
+        !library ||
+        !library.downloads
+    ) {
+
+        return null;
+
+    }
+
+
+    if (
+        library.downloads.artifact
     ) {
 
         return {
-            path:
-                library.downloads.artifact.path,
-
             url:
                 library.downloads.artifact.url,
 
-            size:
-                library.downloads.artifact.size || 0
+            path:
+                library.downloads.artifact.path
         };
 
     }
 
 
     /*
-     * fallback Maven 경로
+     * 구형 metadata에서 artifact가
+     * 없는 경우 Maven 좌표로 생성.
      */
 
     if (
@@ -1870,22 +1672,13 @@ function getLibraryArtifact(
 
 
     const group =
-        parts[0].replace(
-            /\./g,
-            "/"
-        );
+        parts[0];
 
-
-    const artifact =
+    const name =
         parts[1];
-
 
     const version =
         parts[2];
-
-
-    const file =
-        `${artifact}-${version}.jar`;
 
 
     const baseUrl =
@@ -1893,64 +1686,140 @@ function getLibraryArtifact(
         "https://libraries.minecraft.net/";
 
 
-    const url =
-        baseUrl.replace(
-            /\/?$/,
-            "/"
-        ) +
-        `${group}/${artifact}/${version}/${file}`;
+    const path =
+        `${group.replace(/\./g, "/")}/` +
+        `${name}/` +
+        `${version}/` +
+        `${name}-${version}.jar`;
 
 
     return {
-        path:
-            `${group}/${artifact}/${version}/${file}`,
 
-        url,
+        url:
+            baseUrl.replace(/\/?$/, "/") +
+            path,
 
-        size: 0
+        path
+
     };
 
 }
 
 
-/* =========================================
+/* =========================================================
+   Library rules
+========================================================= */
+
+function isLibraryAllowed(
+    library
+) {
+
+    /*
+     * 모든 Minecraft version JSON의 rules를
+     * 완벽하게 구현한 단계는 아니다.
+     *
+     * 하지만 명시적으로 disallow되어 있는
+     * 경우는 우선 제외한다.
+     */
+
+    if (
+        !Array.isArray(
+            library.rules
+        )
+    ) {
+
+        return true;
+
+    }
+
+
+    let allowed = true;
+
+
+    for (
+        const rule of library.rules
+    ) {
+
+        if (
+            rule.action ===
+            "disallow"
+        ) {
+
+            allowed = false;
+
+        }
+
+        if (
+            rule.action ===
+            "allow"
+        ) {
+
+            allowed = true;
+
+        }
+
+    }
+
+
+    return allowed;
+
+}
+
+
+/* =========================================================
    Libraries 다운로드
-   ========================================= */
+========================================================= */
 
 async function downloadLibraries() {
 
+    if (!currentVersionData) {
+
+        log(
+            "먼저 버전 정보를 읽어주세요.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const libraries =
+        Array.isArray(
+            currentVersionData.libraries
+        )
+            ? currentVersionData.libraries
+            : [];
+
+
+    if (
+        libraries.length === 0
+    ) {
+
+        log(
+            "다운로드할 Library가 없습니다.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    setStage(
+        "libraries",
+        "다운로드 중...",
+        "running"
+    );
+
+
     try {
 
-        if (
-            !currentVersionData
-        ) {
-
-            await loadVersionData();
-
-        }
-
-
-        if (
-            !librariesList.length
-        ) {
-
-            throw new Error(
-                "다운로드할 Libraries가 없습니다."
-            );
-
-        }
-
-
-        const cache =
-            await openMinecraftCache();
-
-
-        /*
-         * 다운로드 가능한 artifact만 선택
-         */
-
         const artifacts =
-            librariesList
+            libraries
+                .filter(
+                    isLibraryAllowed
+                )
                 .map(
                     getLibraryArtifact
                 )
@@ -1960,7 +1829,7 @@ async function downloadLibraries() {
 
 
         log(
-            `Libraries 다운로드 시작: ${artifacts.length}개`,
+            `Library ${artifacts.length}개 확인`,
             "info"
         );
 
@@ -1968,139 +1837,134 @@ async function downloadLibraries() {
         let completed = 0;
 
 
-        setProgress(
-            0,
-            `Libraries 0 / ${artifacts.length}`
-        );
-
-
         /*
-         * 동시에 4개씩 다운로드
+         * 브라우저에 너무 많은 동시 요청을
+         * 보내지 않도록 4개씩 처리.
          */
 
-        const concurrency =
-            4;
+        const concurrency = 4;
 
 
-        for (
-            let i = 0;
-            i < artifacts.length;
-            i += concurrency
-        ) {
+        async function worker() {
 
-            const batch =
-                artifacts.slice(
-                    i,
-                    i + concurrency
+            while (true) {
+
+                const index =
+                    completed++;
+
+
+                if (
+                    index >=
+                    artifacts.length
+                ) {
+
+                    return;
+
+                }
+
+
+                const artifact =
+                    artifacts[index];
+
+
+                try {
+
+                    const safePath =
+                        artifact.path
+                            .replace(
+                                /\.\./g,
+                                ""
+                            );
+
+
+                    const cacheKey =
+                        buildCacheKey(
+                            `minecraft/${currentVersion}/libraries/${safePath}`
+                        );
+
+
+                    await downloadToCache(
+                        artifact.url,
+                        cacheKey
+                    );
+
+                }
+                catch (error) {
+
+                    log(
+                        `Library 실패: ${artifact.path} - ${error.message}`,
+                        "error"
+                    );
+
+                }
+
+
+                const percent =
+                    artifacts.length > 0
+                        ? (
+                            (index + 1) /
+                            artifacts.length
+                        ) * 100
+                        : 100;
+
+
+                setProgress(
+                    40 +
+                    percent * 0.30
                 );
 
-
-            await Promise.all(
-                batch.map(
-                    async artifact => {
-
-                        const cacheKey =
-                            `minecraft/${currentVersion}/libraries/${artifact.path}`;
-
-
-                        try {
-
-                            const cached =
-                                await cache.match(
-                                    cacheKey
-                                );
-
-
-                            if (
-                                cached
-                            ) {
-
-                                completed++;
-
-                                setProgress(
-                                    (
-                                        completed /
-                                        artifacts.length
-                                    ) * 100,
-                                    `Libraries ${completed} / ${artifacts.length}`
-                                );
-
-                                return;
-
-                            }
-
-
-                            const response =
-                                await fetchWithError(
-                                    artifact.url
-                                );
-
-
-                            await cache.put(
-                                cacheKey,
-                                response.clone()
-                            );
-
-
-                            completed++;
-
-
-                            setProgress(
-                                (
-                                    completed /
-                                    artifacts.length
-                                ) * 100,
-                                `Libraries ${completed} / ${artifacts.length}`
-                            );
-
-
-                        } catch (error) {
-
-                            log(
-                                `Library 실패: ${artifact.path} - ${error.message}`,
-                                "warning"
-                            );
-
-                        }
-
-                    }
-                )
-            );
+            }
 
         }
 
 
-        document.getElementById(
-            "stage-libraries"
-        ).textContent =
-            "완료";
+        const workers =
+            Array.from(
+                {
+                    length:
+                        Math.min(
+                            concurrency,
+                            artifacts.length
+                        )
+                },
+                worker
+            );
 
 
-        document.getElementById(
-            "stat-libraries"
-        ).textContent =
-            artifacts.length;
+        await Promise.all(
+            workers
+        );
 
 
-        log(
-            `Libraries 처리 완료: ${completed}/${artifacts.length}`,
+        setStage(
+            "libraries",
+            "완료",
             "success"
         );
 
 
-        await updateCacheStats();
+        log(
+            "Libraries 처리 완료",
+            "success"
+        );
 
 
-    } catch (error) {
+        setProgress(
+            70
+        );
 
-        document.getElementById(
-            "stage-libraries"
-        ).textContent =
-            "실패";
+    }
+    catch (error) {
+
+        setStage(
+            "libraries",
+            `실패: ${error.message}`,
+            "error"
+        );
 
 
         log(
-            `Libraries 다운로드 실패: ${error.message}`,
+            `Libraries 처리 실패: ${error.message}`,
             "error"
         );
 
@@ -2109,257 +1973,232 @@ async function downloadLibraries() {
 }
 
 
-/* =========================================
-   Asset Index 다운로드
-   ========================================= */
+/* =========================================================
+   Assets
+========================================================= */
 
-async function loadAssetIndex() {
+async function downloadAssets() {
+
+    if (!currentVersionData) {
+
+        log(
+            "먼저 버전 정보를 읽어주세요.",
+            "error"
+        );
+
+        return;
+
+    }
+
 
     const assetIndex =
-        currentVersionData?.assetIndex;
+        currentVersionData
+            .assetIndex;
 
 
     if (
         !assetIndex?.url
     ) {
 
-        throw new Error(
-            "Asset Index 정보가 없습니다."
+        log(
+            "이 버전에는 Asset Index가 없습니다.",
+            "error"
         );
+
+        return;
 
     }
 
 
-    log(
-        `Asset Index ${assetIndex.id} 읽는 중...`,
-        "info"
+    setStage(
+        "assets",
+        "Asset Index 읽는 중...",
+        "running"
     );
 
 
-    const response =
-        await fetchWithError(
-            assetIndex.url
-        );
-
-
-    return response.json();
-
-}
-
-
-/* =========================================
-   Assets 다운로드
-   ========================================= */
-
-async function downloadAssets() {
-
     try {
 
-        if (
-            !currentVersionData
-        ) {
-
-            await loadVersionData();
-
-        }
-
-
-        const assetIndex =
-            currentVersionData?.assetIndex;
-
-
-        if (
-            !assetIndex?.url
-        ) {
-
-            throw new Error(
-                "Asset Index URL이 없습니다."
-            );
-
-        }
-
-
         const assetData =
-            await loadAssetIndex();
+            await fetchJSON(
+                assetIndex.url
+            );
 
 
         const objects =
-            assetData.objects ||
-            {};
+            assetData.objects || {};
 
 
-        const assetEntries =
+        const entries =
             Object.entries(
                 objects
             );
 
 
-        assetsList =
-            assetEntries;
-
-
-        const cache =
-            await openMinecraftCache();
-
-
         log(
-            `Assets 다운로드 시작: ${assetEntries.length}개`,
+            `Asset ${entries.length}개 확인`,
             "info"
         );
 
 
-        document.getElementById(
-            "stat-assets"
-        ).textContent =
-            assetEntries.length;
-
-
         let completed = 0;
 
-
-        setProgress(
-            0,
-            `Assets 0 / ${assetEntries.length}`
-        );
+        const concurrency = 6;
 
 
-        /*
-         * Asset 파일은
-         *
-         * hash 앞 2글자 / hash
-         *
-         * 구조로 저장된다.
-         */
+        async function worker() {
 
-        const concurrency =
-            6;
+            while (true) {
+
+                const index =
+                    completed++;
 
 
-        for (
-            let i = 0;
-            i < assetEntries.length;
-            i += concurrency
-        ) {
+                if (
+                    index >=
+                    entries.length
+                ) {
 
-            const batch =
-                assetEntries.slice(
-                    i,
-                    i + concurrency
+                    return;
+
+                }
+
+
+                const [
+                    assetName,
+                    assetInfo
+                ] =
+                    entries[index];
+
+
+                if (
+                    !assetInfo ||
+                    !assetInfo.hash
+                ) {
+
+                    continue;
+
+                }
+
+
+                const hash =
+                    assetInfo.hash;
+
+
+                const prefix =
+                    hash.substring(
+                        0,
+                        2
+                    );
+
+
+                const assetUrl =
+                    `https://resources.download.minecraft.net/${prefix}/${hash}`;
+
+
+                const safeName =
+                    assetName.replace(
+                        /\.\./g,
+                        ""
+                    );
+
+
+                const cacheKey =
+                    buildCacheKey(
+                        `minecraft/${currentVersion}/assets/${safeName}`
+                    );
+
+
+                try {
+
+                    await downloadToCache(
+                        assetUrl,
+                        cacheKey
+                    );
+
+                }
+                catch (error) {
+
+                    log(
+                        `Asset 실패: ${assetName}`,
+                        "error"
+                    );
+
+                }
+
+
+                const percent =
+                    entries.length > 0
+                        ? (
+                            (index + 1) /
+                            entries.length
+                        ) * 100
+                        : 100;
+
+
+                setProgress(
+                    70 +
+                    percent * 0.30
                 );
 
-
-            await Promise.all(
-                batch.map(
-                    async ([assetName, asset]) => {
-
-                        try {
-
-                            if (
-                                !asset?.hash
-                            ) {
-
-                                completed++;
-
-                                return;
-
-                            }
-
-
-                            const hash =
-                                asset.hash;
-
-
-                            const url =
-                                `https://resources.download.minecraft.net/${hash.substring(
-                                    0,
-                                    2
-                                )}/${hash}`;
-
-
-                            const cacheKey =
-                                `minecraft/${currentVersion}/assets/${assetName}`;
-
-
-                            const cached =
-                                await cache.match(
-                                    cacheKey
-                                );
-
-
-                            if (
-                                !cached
-                            ) {
-
-                                const response =
-                                    await fetchWithError(
-                                        url
-                                    );
-
-
-                                await cache.put(
-                                    cacheKey,
-                                    response.clone()
-                                );
-
-                            }
-
-
-                            completed++;
-
-
-                            setProgress(
-                                (
-                                    completed /
-                                    assetEntries.length
-                                ) * 100,
-                                `Assets ${completed} / ${assetEntries.length}`
-                            );
-
-
-                        } catch (error) {
-
-                            log(
-                                `Asset 실패: ${assetName}`,
-                                "warning"
-                            );
-
-
-                            completed++;
-
-                        }
-
-                    }
-                )
-            );
+            }
 
         }
 
 
-        document.getElementById(
-            "stage-assets"
-        ).textContent =
-            "완료";
+        const workers =
+            Array.from(
+                {
+                    length:
+                        Math.min(
+                            concurrency,
+                            entries.length
+                        )
+                },
+                worker
+            );
 
 
-        log(
-            `Assets 처리 완료: ${completed}/${assetEntries.length}`,
+        await Promise.all(
+            workers
+        );
+
+
+        setStage(
+            "assets",
+            "완료",
             "success"
         );
 
 
-        await updateCacheStats();
-
-
-    } catch (error) {
-
-        document.getElementById(
-            "stage-assets"
-        ).textContent =
-            "실패";
+        setProgress(
+            100
+        );
 
 
         log(
-            `Assets 다운로드 실패: ${error.message}`,
+            "Assets 처리 완료",
+            "success"
+        );
+
+
+        log(
+            "A단계 Minecraft 파일 준비가 완료되었습니다.",
+            "success"
+        );
+
+    }
+    catch (error) {
+
+        setStage(
+            "assets",
+            `실패: ${error.message}`,
+            "error"
+        );
+
+
+        log(
+            `Assets 처리 실패: ${error.message}`,
             "error"
         );
 
@@ -2368,64 +2207,33 @@ async function downloadAssets() {
 }
 
 
-/* =========================================
-   Cache 통계
-   ========================================= */
+/* =========================================================
+   뒤로가기
+========================================================= */
 
-async function updateCacheStats() {
+function goBack() {
 
-    try {
-
-        if (
-            !("caches" in window)
-        ) {
-
-            document.getElementById(
-                "stat-cache"
-            ).textContent =
-                "미지원";
-
-            return;
-
-        }
-
-
-        const cache =
-            await caches.open(
-                CACHE_NAME
-            );
-
-
-        const keys =
-            await cache.keys();
-
-
-        document.getElementById(
-            "stat-cache"
-        ).textContent =
-            `${keys.length}개`;
-
-    } catch (error) {
-
-        document.getElementById(
-            "stat-cache"
-        ).textContent =
-            "오류";
-
-    }
+    window.location.href =
+        "./index.html";
 
 }
 
 
-/* =========================================
+/* =========================================================
    초기화
-   ========================================= */
+========================================================= */
 
 async function initialize() {
 
     log(
-        "MojoCraft Core Engine 시작.",
-        "success"
+        "MojoCraft Core Engine 시작",
+        "info"
+    );
+
+
+    log(
+        `선택 버전: ${LAUNCH_VERSION || "없음"}`,
+        "info"
     );
 
 
@@ -2435,30 +2243,16 @@ async function initialize() {
     );
 
 
-    if (
-        LAUNCH_UUID
-    ) {
+    if (!LAUNCH_VERSION) {
 
-        log(
-            `UUID: ${LAUNCH_UUID}`,
-            "info"
-        );
-
-    }
-
-
-    if (
-        !LAUNCH_VERSION
-    ) {
-
-        setEngineStatus(
-            "버전 없음",
-            "error"
-        );
+        document.getElementById(
+            "version-name"
+        ).textContent =
+            "선택된 버전 없음";
 
 
         log(
-            "index.html에서 Minecraft 버전을 전달받지 못했습니다.",
+            "URL에 version 파라미터가 없습니다.",
             "error"
         );
 
@@ -2468,60 +2262,24 @@ async function initialize() {
     }
 
 
-    log(
-        `런처에서 Minecraft ${LAUNCH_VERSION}을 전달받았습니다.`,
-        "success"
-    );
-
-
     document.getElementById(
         "version-name"
     ).textContent =
         LAUNCH_VERSION;
 
 
-    document.getElementById(
-        "stat-version"
-    ).textContent =
-        LAUNCH_VERSION;
-
-
     /*
-     * 자동으로 version.json 읽기
+     * 자동으로 version.json 로딩
      */
 
     await loadVersionData();
 
-
-    /*
-     * Cache 확인
-     */
-
-    await updateCacheStats();
-
-
-    setEngineStatus(
-        "Core Engine 준비 완료"
-    );
-
-
-    log(
-        "A단계 초기화 완료.",
-        "success"
-    );
-
-
-    log(
-        "Client / Libraries / Assets 다운로드를 시작할 수 있습니다.",
-        "info"
-    );
-
 }
 
 
-/* =========================================
-   페이지 시작
-   ========================================= */
+/* =========================================================
+   시작
+========================================================= */
 
 window.addEventListener(
     "DOMContentLoaded",
