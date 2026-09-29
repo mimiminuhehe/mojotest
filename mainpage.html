@@ -168,7 +168,7 @@ html, body {
     </div>
 
     <section class="actions">
-        <button id="prep-btn" class="action-btn" onclick="prepareFiles()">1. 리소스 직접 다운로드</button>
+        <button id="prep-btn" class="action-btn" onclick="prepareFiles()">1. 리소스 다운로드</button>
         <button id="launch-btn" class="action-btn btn-launch" onclick="launchJavaMinecraft()" disabled>2. 게임 실행</button>
     </section>
 
@@ -183,6 +183,9 @@ html, body {
 const launchParams = new URLSearchParams(window.location.search);
 const LAUNCH_VERSION = launchParams.get("version") || "1.12.2";
 const LAUNCH_JSON_URL = launchParams.get("json");
+
+/* 제공해주신 Render 백엔드 프록시 서버 주소 적용 */
+const RENDER_PROXY = "https://mcpr.onrender.com/proxy?url=";
 
 let currentVersionData = null;
 let isReadyToLaunch = false;
@@ -205,21 +208,21 @@ function updateOverlay(text, show = true) {
 }
 
 /* =========================================================
-   1. Mojang 서버에서 직접 다운로드 (프록시 제거)
+   1. Render 프록시 기반 파일 다운로드 및 캐시 저장
 ========================================================= */
 async function prepareFiles() {
-    log(`[시스템] ${LAUNCH_VERSION} 리소스 직접 다운로드를 시작합니다.`, "info");
-    updateOverlay("버전 메타데이터 다운로드 중...");
+    log(`[시스템] ${LAUNCH_VERSION} 리소스 다운로드를 시작합니다.`, "info");
+    updateOverlay("버전 메타데이터 다운로드 중 (Render 프록시 연결)...");
 
     try {
         let versionJsonUrl = LAUNCH_JSON_URL;
 
-        // 전달받은 JSON URL이 없다면 Mojang 공식 Manifest에서 검색
+        // 전달받은 JSON URL이 없다면 공식 Manifest에서 검색
         if (!versionJsonUrl) {
             log("Mojang 공식 Manifest 검색 중...", "info");
             const manifestUrl = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
             
-            const manifestRes = await fetch(manifestUrl);
+            const manifestRes = await fetch(RENDER_PROXY + encodeURIComponent(manifestUrl));
             if (!manifestRes.ok) throw new Error(`Manifest 요청 실패 (HTTP ${manifestRes.status})`);
             
             const manifestData = await manifestRes.json();
@@ -229,9 +232,9 @@ async function prepareFiles() {
             versionJsonUrl = versionObj.url;
         }
 
-        // 1. Mojang 서버에서 version.json 직접 수신
-        log(`Version JSON 직접 요청: ${versionJsonUrl}`, "info");
-        const versionRes = await fetch(versionJsonUrl);
+        // 1. Version JSON 가져오기
+        log(`Version JSON 요청 중...`, "info");
+        const versionRes = await fetch(RENDER_PROXY + encodeURIComponent(versionJsonUrl));
         if (!versionRes.ok) throw new Error(`Version JSON 요청 실패 (HTTP ${versionRes.status})`);
         
         currentVersionData = await versionRes.json();
@@ -239,18 +242,17 @@ async function prepareFiles() {
 
         updateOverlay("Client JAR 다운로드 중...");
         
-        // 2. Client JAR URL 확인
+        // 2. Client JAR URL 추출 및 다운로드
         const clientJarUrl = currentVersionData.downloads?.client?.url;
         if (!clientJarUrl) throw new Error("Client JAR 다운로드 링크가 없습니다.");
 
-        // 3. Mojang 서버에서 Client JAR 바이너리 직접 수신
-        log(`Client JAR 직접 요청 중...`, "info");
-        const jarRes = await fetch(clientJarUrl);
+        log(`Client JAR 받아오는 중...`, "info");
+        const jarRes = await fetch(RENDER_PROXY + encodeURIComponent(clientJarUrl));
         if (!jarRes.ok) throw new Error(`Client JAR 다운로드 실패 (HTTP ${jarRes.status})`);
 
         const jarData = await jarRes.arrayBuffer();
         
-        // 4. Cache Storage에 저장
+        // 3. 브라우저 Cache Storage에 Client JAR 저장
         if ('caches' in window) {
             const cache = await caches.open("mojocraft-runtime");
             const responseToCache = new Response(jarData, {
