@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>MojoCraft Web</title>
+<title>MojoCraft Web Launcher</title>
 
 <style>
 * {
@@ -17,42 +17,39 @@ html,
 body {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 body {
     font-family:
         "Segoe UI",
-        Tahoma,
-        Geneva,
-        Verdana,
+        Arial,
         sans-serif;
 
-    background: #101014;
+    background: #111;
     color: #fff;
-
-    display: flex;
-
-    overflow: hidden;
 }
 
+/* =========================
+   전체 레이아웃
+========================= */
 
-/* =========================================
-   메인 화면
-   ========================================= */
+#app {
+    width: 100%;
+    height: 100vh;
 
-#main-content {
+    display: flex;
+    background: #111;
+}
+
+/* =========================
+   메인 영역
+========================= */
+
+#main {
     flex: 1;
-
     min-width: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    position: relative;
-}
-
-#screen-container {
-    flex: 1;
+    height: 100%;
 
     position: relative;
 
@@ -61,30 +58,32 @@ body {
     background: #000;
 }
 
+/* 배경 이미지 */
+
 #gameImage {
     position: absolute;
-
-    inset: 0;
 
     width: 100%;
     height: 100%;
 
     object-fit: cover;
 
-    user-select: none;
-    pointer-events: none;
+    left: 0;
+    top: 0;
+
+    opacity: 1;
 
     transition:
-        opacity 0.7s ease,
-        transform 0.7s ease;
+        opacity 0.5s ease,
+        transform 0.5s ease;
+
+    user-select: none;
+    pointer-events: none;
 }
 
+/* 어두운 오버레이 */
 
-/* =========================================
-   이미지 어두운 오버레이
-   ========================================= */
-
-#screen-overlay {
+#imageOverlay {
     position: absolute;
 
     inset: 0;
@@ -92,149 +91,114 @@ body {
     background:
         linear-gradient(
             to bottom,
-            rgba(0,0,0,0.05),
-            rgba(0,0,0,0.25)
+            rgba(0,0,0,0.20),
+            rgba(0,0,0,0.05) 45%,
+            rgba(0,0,0,0.70)
         );
 
     pointer-events: none;
 }
 
+/* 중앙 타이틀 */
 
-/* =========================================
+#centerContent {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    text-align: center;
+
+    width: min(800px, 90%);
+
+    z-index: 10;
+
+    text-shadow:
+        0 2px 10px rgba(0,0,0,0.8),
+        0 4px 20px rgba(0,0,0,0.7);
+}
+
+#centerContent h1 {
+    font-size: clamp(32px, 5vw, 70px);
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+#centerContent p {
+    margin-top: 10px;
+
+    color: #ddd;
+
+    font-size: clamp(13px, 1.5vw, 18px);
+}
+
+/* =========================
    이미지 인디케이터
-   ========================================= */
+========================= */
 
 #image-indicators {
     position: absolute;
 
-    left: 0;
-    right: 0;
-    bottom: 22px;
+    left: 50%;
+    bottom: 25px;
 
-    width: 100%;
+    transform: translateX(-50%);
 
     display: flex;
-
-    flex-direction: row;
-
-    align-items: center;
-    justify-content: center;
-
     gap: 10px;
 
     z-index: 1000;
-
-    pointer-events: auto;
 }
 
 .image-indicator {
-    appearance: none;
-    -webkit-appearance: none;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    width: 16px;
-    height: 16px;
-
-    min-width: 16px;
-    min-height: 16px;
-
-    margin: 0;
-    padding: 0;
-
-    border: 2px solid rgba(255,255,255,0.95);
+    width: 12px;
+    height: 12px;
 
     border-radius: 50%;
 
-    background: rgba(0,0,0,0.35);
+    border: 2px solid rgba(255,255,255,0.9);
 
-    box-shadow:
-        0 1px 5px rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.25);
+
+    padding: 0;
 
     cursor: pointer;
 
-    pointer-events: auto;
-
-    opacity: 1;
-
     transition:
         transform 0.2s ease,
-        background 0.2s ease;
+        background 0.2s ease,
+        opacity 0.2s ease;
 }
 
 .image-indicator:hover {
-    transform: scale(1.15);
+    transform: scale(1.25);
 }
 
 .image-indicator.active {
     background: #fff;
 
-    border-color: #fff;
-
     transform: scale(1.15);
-
-    box-shadow:
-        0 1px 7px rgba(0,0,0,0.8);
 }
 
-
-/* =========================================
-   로그
-   ========================================= */
-
-#log-panel {
-    height: 150px;
-
-    flex-shrink: 0;
-
-    background: #0d0d0e;
-
-    border-top:
-        1px solid #2a2a30;
-
-    padding: 10px;
-
-    font-family: monospace;
-
-    font-size: 12px;
-
-    overflow-y: auto;
-
-    color: #aaa;
-
-    z-index: 10;
-}
-
-.log-entry {
-    margin-bottom: 4px;
-}
-
-.log-entry.info {
-    color: #888;
-}
-
-.log-entry.success {
-    color: #4CAF50;
-}
-
-.log-entry.error {
-    color: #f44336;
-}
-
-
-/* =========================================
-   오른쪽 사이드바
-   ========================================= */
+/* =========================
+   사이드바
+========================= */
 
 #sidebar {
-    width: 320px;
+    width: 340px;
+    min-width: 340px;
+    height: 100%;
 
-    flex-shrink: 0;
+    background:
+        linear-gradient(
+            180deg,
+            #17171a,
+            #101012
+        );
 
-    background: #121214;
+    border-left: 1px solid #29292d;
 
     padding: 20px;
 
@@ -243,345 +207,345 @@ body {
 
     gap: 16px;
 
-    border-left:
-        1px solid #2a2a30;
+    overflow-y: auto;
 }
 
-
-/* =========================================
-   로고
-   ========================================= */
+/* 로고 */
 
 .logo {
-    font-size: 24px;
-
-    font-weight: bold;
-
-    color: #4CAF50;
-
     text-align: center;
+
+    font-size: 25px;
+    font-weight: 800;
+
+    color: #76ff03;
+
+    letter-spacing: 0.5px;
+
+    margin-bottom: 5px;
 }
 
-
-/* =========================================
+/* =========================
    계정 카드
-   ========================================= */
+========================= */
 
 .account-card {
-    background: #2a2a30;
-
-    padding: 15px;
-
-    border-radius: 8px;
-
     display: flex;
-
     align-items: center;
 
     gap: 12px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    background: #252529;
+
+    border: 1px solid #34343a;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+
+    border-radius: 6px;
 
     background: #444;
 
-    border-radius: 4px;
-
     object-fit: cover;
+
+    flex-shrink: 0;
 }
 
 .user-info {
-    display: flex;
+    min-width: 0;
 
+    display: flex;
     flex-direction: column;
 
-    min-width: 0;
+    gap: 3px;
 }
 
 .username {
-    font-weight: bold;
-
     font-size: 14px;
-
-    white-space: nowrap;
+    font-weight: 700;
 
     overflow: hidden;
-
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .status {
     font-size: 12px;
-
-    color: #888;
+    color: #999;
 }
 
-
-/* =========================================
+/* =========================
    버튼
-   ========================================= */
+========================= */
 
 button {
-    padding: 12px;
+    font-family: inherit;
+}
+
+.btn {
+    width: 100%;
+
+    padding: 12px 14px;
 
     border: none;
+    border-radius: 7px;
 
-    border-radius: 6px;
-
-    font-weight: bold;
+    font-size: 14px;
+    font-weight: 700;
 
     cursor: pointer;
 
     transition:
-        background 0.2s,
-        transform 0.1s,
-        opacity 0.2s;
+        background 0.2s ease,
+        transform 0.1s ease,
+        opacity 0.2s ease;
 }
 
-button:active {
+.btn:active {
     transform: scale(0.98);
 }
 
-
-/* 로그인 */
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
 
 .btn-login {
     background: #0078d4;
-
-    color: white;
+    color: #fff;
 }
 
 .btn-login:hover {
-    background: #005a9e;
+    background: #106ebe;
 }
 
+/* =========================
+   버전 영역
+========================= */
 
-/* 실행 */
+.version-box {
+    display: flex;
+    flex-direction: column;
 
-.btn-launch {
+    gap: 7px;
+}
+
+.version-box label {
+    font-size: 12px;
+
+    color: #aaa;
+}
+
+select,
+input {
+    width: 100%;
+
+    padding: 11px;
+
+    border-radius: 7px;
+
+    border: 1px solid #3a3a40;
+
+    outline: none;
+
+    background: #252529;
+    color: #fff;
+
+    font-family: inherit;
+
+    font-size: 13px;
+}
+
+select:focus,
+input:focus {
+    border-color: #76ff03;
+}
+
+select:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* =========================
+   버전 상태
+========================= */
+
+#version-status {
+    padding: 9px 10px;
+
+    border-radius: 6px;
+
+    background: #1e1e22;
+
+    border: 1px solid #303036;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+    color: #aaa;
+}
+
+#version-status.success {
+    color: #7CFF55;
+}
+
+#version-status.error {
+    color: #ff6565;
+}
+
+/* =========================
+   실행 버튼
+========================= */
+
+#launch-btn {
+    margin-top: auto;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 8px;
+
     background: #76ff03;
 
     color: #000;
 
     font-size: 18px;
+    font-weight: 800;
 
-    margin-top: auto;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.1s ease;
 }
 
-.btn-launch:hover {
-    background: #64dd17;
+#launch-btn:hover:not(:disabled) {
+    background: #8cff35;
 }
 
-.btn-launch:disabled {
-    background: #555;
+#launch-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
 
+#launch-btn:disabled {
+    background: #444;
     color: #888;
 
     cursor: not-allowed;
 }
 
+/* =========================
+   로그
+========================= */
 
-/* =========================================
-   버전 영역
-   ========================================= */
+#log-panel {
+    position: absolute;
 
-.version-group {
-    display: flex;
+    left: 15px;
+    bottom: 15px;
 
-    flex-direction: column;
+    width: min(600px, calc(100% - 30px));
 
-    gap: 6px;
-}
+    max-height: 135px;
 
-.version-group label {
-    font-size: 12px;
-
-    color: #aaa;
-}
-
-select {
     padding: 10px;
 
-    background: #2a2a30;
+    background: rgba(8,8,9,0.82);
 
-    color: white;
+    border: 1px solid rgba(255,255,255,0.08);
 
-    border:
-        1px solid #444;
+    border-radius: 8px;
 
-    border-radius: 4px;
+    backdrop-filter: blur(8px);
 
-    outline: none;
+    overflow-y: auto;
 
-    cursor: pointer;
+    z-index: 20;
 
-    width: 100%;
-}
-
-select:disabled {
-    cursor: wait;
-
-    opacity: 0.6;
-}
-
-
-/* =========================================
-   버전 상태
-   ========================================= */
-
-#version-status {
+    font-family: monospace;
     font-size: 11px;
 
-    color: #777;
+    color: #aaa;
+}
+
+.log-entry {
+    margin-bottom: 4px;
 
     line-height: 1.4;
-
-    min-height: 15px;
 }
 
-
-/* =========================================
-   로딩 화면
-   ========================================= */
-
-#loading {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 2000;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    background:
-        rgba(0,0,0,0.75);
-
-    backdrop-filter:
-        blur(5px);
+.log-entry:last-child {
+    margin-bottom: 0;
 }
 
-.loading-box {
-    width: min(420px, 90vw);
-
-    background: #18181c;
-
-    border:
-        1px solid #333;
-
-    border-radius: 12px;
-
-    padding: 24px;
-
-    box-shadow:
-        0 20px 60px rgba(0,0,0,0.5);
+.log-entry.success {
+    color: #6cff55;
 }
 
-.loading-title {
-    font-size: 18px;
-
-    font-weight: bold;
-
-    margin-bottom: 15px;
+.log-entry.error {
+    color: #ff5555;
 }
 
-.loading-text {
+.log-entry.info {
     color: #aaa;
-
-    font-size: 13px;
-
-    margin-bottom: 15px;
 }
 
-.progress-background {
-    width: 100%;
-
-    height: 8px;
-
-    background: #333;
-
-    border-radius: 20px;
-
-    overflow: hidden;
-}
-
-#loading-progress {
-    width: 0%;
-
-    height: 100%;
-
-    background: #76ff03;
-
-    transition:
-        width 0.25s ease;
-}
-
-#loading-percent {
-    margin-top: 8px;
-
-    text-align: right;
-
-    font-size: 12px;
-
-    color: #888;
-}
-
-
-/* =========================================
+/* =========================
    모바일
-   ========================================= */
+========================= */
 
 @media (max-width: 800px) {
 
-    body {
+    #app {
         flex-direction: column;
     }
 
-    #main-content {
-        min-height: 55vh;
+    #main {
+        height: 55vh;
+        flex: none;
     }
 
     #sidebar {
         width: 100%;
-
-        height: auto;
-
-        max-height: 45vh;
-
-        overflow-y: auto;
+        min-width: 0;
+        height: 45vh;
 
         border-left: none;
+        border-top: 1px solid #29292d;
 
-        border-top:
-            1px solid #2a2a30;
-    }
+        padding: 14px;
 
-    .btn-launch {
-        margin-top: 10px;
+        overflow-y: auto;
     }
 
     #log-panel {
-        height: 100px;
+        max-height: 95px;
+    }
+
+    #launch-btn {
+        margin-top: 0;
     }
 }
 </style>
 </head>
 
-
 <body>
 
+<div id="app">
 
-<!-- =========================================
-     메인 화면
-     ========================================= -->
+    <!-- =========================
+         메인 화면
+    ========================== -->
 
-<div id="main-content">
-
-    <div id="screen-container">
+    <main id="main">
 
         <img
             id="gameImage"
@@ -589,394 +553,265 @@ select:disabled {
             alt="Minecraft"
         >
 
-        <div id="screen-overlay"></div>
+        <div id="imageOverlay"></div>
+
+        <div id="centerContent">
+            <h1>MojoCraft</h1>
+            <p>
+                Minecraft Java Edition Web Launcher
+            </p>
+        </div>
 
         <div id="image-indicators"></div>
 
-    </div>
+        <div id="log-panel">
 
-
-    <div id="log-panel">
-
-        <div class="log-entry info">
-            [시스템] MojoCraft Web Launcher 초기화 중...
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =========================================
-     사이드바
-     ========================================= -->
-
-<div id="sidebar">
-
-    <div class="logo">
-        MojoCraft Web
-    </div>
-
-
-    <!-- 계정 -->
-
-    <div
-        class="account-card"
-        id="account-card"
-    >
-
-        <img
-            id="avatar"
-            class="avatar"
-            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-            alt="Skin"
-        >
-
-        <div class="user-info">
-
-            <span
-                class="username"
-                id="username"
-            >
-                비로그인
-            </span>
-
-            <span
-                class="status"
-                id="auth-status"
-            >
-                Microsoft 계정 필요
-            </span>
+            <div class="log-entry info">
+                [시스템] MojoCraft Launcher 시작
+            </div>
 
         </div>
 
-    </div>
+    </main>
 
+    <!-- =========================
+         사이드바
+    ========================== -->
 
-    <!-- Microsoft 로그인 -->
+    <aside id="sidebar">
 
-    <button
-        class="btn-login"
-        id="login-btn"
-        onclick="startMicrosoftOAuth()"
-    >
-        Microsoft 계정 로그인
-    </button>
+        <div class="logo">
+            MojoCraft Web
+        </div>
 
+        <!-- 계정 -->
 
-    <!-- 버전 필터 -->
+        <div class="account-card">
 
-    <div class="version-group">
+            <img
+                id="avatar"
+                class="avatar"
+                alt="Minecraft Skin"
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+            >
 
-        <label for="version-type">
-            버전 필터
-        </label>
+            <div class="user-info">
 
-        <select
-            id="version-type"
-            onchange="filterVersions()"
+                <span
+                    id="username"
+                    class="username"
+                >
+                    비로그인
+                </span>
+
+                <span
+                    id="auth-status"
+                    class="status"
+                >
+                    Microsoft 계정 필요
+                </span>
+
+            </div>
+
+        </div>
+
+        <button
+            id="login-btn"
+            class="btn btn-login"
+            onclick="startMicrosoftOAuth()"
         >
+            Microsoft 계정 로그인
+        </button>
 
-            <option value="release">
-                정식 출시 버전 (Release)
-            </option>
+        <!-- 버전 필터 -->
 
-            <option value="all">
-                전체 버전 (Snapshot/Beta 포함)
-            </option>
+        <div class="version-box">
 
-            <option value="snapshot">
-                스냅샷 (Snapshot)
-            </option>
+            <label for="version-type">
+                버전 종류
+            </label>
 
-        </select>
+            <select
+                id="version-type"
+                onchange="filterVersions()"
+            >
+                <option value="release">
+                    정식 출시 버전
+                </option>
 
-    </div>
+                <option value="snapshot">
+                    스냅샷
+                </option>
 
+                <option value="all">
+                    전체 버전
+                </option>
+            </select>
 
-    <!-- Minecraft 버전 -->
+        </div>
 
-    <div class="version-group">
+        <!-- 검색 -->
 
-        <label for="java-version">
-            자바 마인크래프트 버전 선택
-        </label>
+        <div class="version-box">
 
-        <select
-            id="java-version"
+            <label for="version-search">
+                버전 검색
+            </label>
+
+            <input
+                id="version-search"
+                type="text"
+                placeholder="예: 1.21.8"
+                oninput="filterVersions()"
+            >
+
+        </div>
+
+        <!-- 버전 선택 -->
+
+        <div class="version-box">
+
+            <label for="java-version">
+                자바 마인크래프트 버전 선택
+            </label>
+
+            <select
+                id="java-version"
+                disabled
+            >
+                <option value="">
+                    버전 불러오는 중...
+                </option>
+            </select>
+
+        </div>
+
+        <div
+            id="version-status"
+            class="info"
+        >
+            Minecraft 버전 목록을 불러오는 중...
+        </div>
+
+        <!-- 실행 -->
+
+        <button
+            id="launch-btn"
             disabled
+            onclick="launchGameEngine()"
         >
+            게임 실행
+        </button>
 
-            <option value="">
-                버전 불러오는 중...
-            </option>
-
-        </select>
-
-        <div id="version-status"></div>
-
-    </div>
-
-
-    <!-- 실행 -->
-
-    <button
-        class="btn-launch"
-        id="launch-btn"
-        disabled
-        onclick="launchGameEngine()"
-    >
-        게임 실행
-    </button>
+    </aside>
 
 </div>
-
-
-
-<!-- =========================================
-     로딩 화면
-     ========================================= -->
-
-<div id="loading">
-
-    <div class="loading-box">
-
-        <div
-            class="loading-title"
-            id="loading-title"
-        >
-            MojoCraft 준비 중
-        </div>
-
-        <div
-            class="loading-text"
-            id="loading-text"
-        >
-            Core Engine으로 연결하는 중...
-        </div>
-
-        <div class="progress-background">
-
-            <div
-                id="loading-progress"
-            ></div>
-
-        </div>
-
-        <div
-            id="loading-percent"
-        >
-            0%
-        </div>
-
-    </div>
-
-</div>
-
-
 
 <script>
 
-/* =========================================
-   설정
-   ========================================= */
+/* =========================================================
+   MojoCraft Launcher
+========================================================= */
+
+/*
+ * Mojang 공식 version manifest
+ *
+ * 기존:
+ * launchermeta.mojang.com
+ *
+ * 수정:
+ * piston-meta.mojang.com
+ */
 
 const MOJANG_MANIFEST_URL =
-    "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json";
+    "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 
 
 /*
- * Microsoft OAuth를 실제로 연결할 경우
- * Azure에서 발급받은 Client ID로 변경해야 한다.
- *
- * 현재는 UI만 준비한다.
+ * 현재 페이지에서 사용하는 이미지
  */
 
-const CLIENT_ID =
-    "00000000-0000-0000-0000-000000000000";
+const IMAGES = [
+    "./images/minecraft-bg.jpg",
+    "./images/minecraft-2.jpeg",
+    "./images/minecraft-3.jpeg",
+    "./images/minecraft-4.jpeg",
+    "./images/minecraft-5.jpeg"
+];
 
 
-const REDIRECT_URI =
-    window.location.origin +
-    window.location.pathname;
-
-
-/* =========================================
-   상태
-   ========================================= */
+/*
+ * 상태
+ */
 
 let allVersions = [];
 
-let authSession = {
+let selectedVersion = null;
 
-    accessToken: null,
-
-    minecraftToken: null,
-
-    uuid:
-        "00000000000000000000000000000000",
-
-    username:
-        "Player"
-
-};
-
-
-/* =========================================
-   로그
-   ========================================= */
-
-function log(
-    message,
-    type = "info"
-) {
-
-    const logPanel =
-        document.getElementById(
-            "log-panel"
-        );
-
-    if (!logPanel) {
-        return;
-    }
-
-    const entry =
-        document.createElement(
-            "div"
-        );
-
-    entry.className =
-        `log-entry ${type}`;
-
-    entry.innerText =
-        `[${new Date().toLocaleTimeString()}] ${message}`;
-
-    logPanel.appendChild(entry);
-
-    logPanel.scrollTop =
-        logPanel.scrollHeight;
-}
-
-
-/* =========================================
-   이미지 슬라이드
-   ========================================= */
-
-const gameImages = [
-
-    "./images/minecraft-bg.jpg",
-
-    "./images/minecraft-2.jpeg",
-
-    "./images/minecraft-3.jpeg",
-
-    "./images/minecraft-4.jpeg",
-
-    "./images/minecraft-5.jpeg"
-
-];
-
-let currentImageIndex = 0;
+let imageIndex = 0;
 
 let imageTimer = null;
 
 
-/* 이미지 표시 */
+/* =========================================================
+   로그
+========================================================= */
 
-function showGameImage(index) {
+function log(message, type = "info") {
 
-    const image =
-        document.getElementById(
-            "gameImage"
-        );
+    const panel =
+        document.getElementById("log-panel");
 
-    const indicators =
-        document.querySelectorAll(
-            ".image-indicator"
-        );
-
-    if (!image) {
+    if (!panel) {
         return;
     }
 
-    if (
-        index < 0 ||
-        index >= gameImages.length
-    ) {
+    const entry =
+        document.createElement("div");
+
+    entry.className =
+        `log-entry ${type}`;
+
+    const time =
+        new Date().toLocaleTimeString();
+
+    entry.textContent =
+        `[${time}] ${message}`;
+
+    panel.appendChild(entry);
+
+    panel.scrollTop =
+        panel.scrollHeight;
+}
+
+
+/* =========================================================
+   버전 상태 표시
+========================================================= */
+
+function setVersionStatus(
+    message,
+    type = "info"
+) {
+
+    const element =
+        document.getElementById("version-status");
+
+    if (!element) {
         return;
     }
 
-    currentImageIndex = index;
+    element.textContent =
+        message;
 
-
-    /*
-     * 페이드 효과
-     */
-
-    image.style.opacity = "0";
-
-
-    setTimeout(() => {
-
-        image.src =
-            gameImages[index];
-
-        image.style.opacity = "1";
-
-    }, 250);
-
-
-    /*
-     * 인디케이터 업데이트
-     */
-
-    indicators.forEach(
-        (button, buttonIndex) => {
-
-            button.classList.toggle(
-                "active",
-                buttonIndex === index
-            );
-
-        }
-    );
-
+    element.className =
+        `info ${type}`;
 }
 
 
-/* 자동 이미지 변경 */
-
-function startImageRotation() {
-
-    if (imageTimer) {
-
-        clearInterval(
-            imageTimer
-        );
-
-    }
-
-    imageTimer =
-        setInterval(() => {
-
-            let next =
-                currentImageIndex + 1;
-
-            if (
-                next >= gameImages.length
-            ) {
-                next = 0;
-            }
-
-            showGameImage(next);
-
-        }, 15000);
-
-}
-
-
-/* 인디케이터 생성 */
+/* =========================================================
+   이미지 인디케이터
+========================================================= */
 
 function createImageIndicators() {
 
@@ -985,86 +820,185 @@ function createImageIndicators() {
             "image-indicators"
         );
 
-    if (!container) {
-        return;
-    }
-
     container.innerHTML = "";
 
-
-    gameImages.forEach(
+    IMAGES.forEach(
         (image, index) => {
 
             const button =
-                document.createElement(
-                    "button"
-                );
-
-            button.type =
-                "button";
+                document.createElement("button");
 
             button.className =
                 "image-indicator";
 
-
-            if (index === 0) {
-
-                button.classList.add(
-                    "active"
-                );
-
+            if (index === imageIndex) {
+                button.classList.add("active");
             }
 
+            button.type = "button";
 
-            button.setAttribute(
-                "aria-label",
-                `이미지 ${index + 1}`
-            );
-
+            button.title =
+                `배경 이미지 ${index + 1}`;
 
             button.addEventListener(
                 "click",
                 () => {
 
-                    showGameImage(
-                        index
-                    );
+                    showImage(index);
 
-                    startImageRotation();
+                    restartImageTimer();
 
                 }
             );
 
+            container.appendChild(button);
 
-            container.appendChild(
-                button
+        }
+    );
+}
+
+
+/* =========================================================
+   이미지 변경
+========================================================= */
+
+function showImage(index) {
+
+    imageIndex =
+        (index + IMAGES.length) %
+        IMAGES.length;
+
+    const image =
+        document.getElementById(
+            "gameImage"
+        );
+
+    image.style.opacity = "0";
+
+    setTimeout(
+        () => {
+
+            image.src =
+                IMAGES[imageIndex];
+
+            image.onload =
+                () => {
+
+                    image.style.opacity = "1";
+
+                };
+
+            image.onerror =
+                () => {
+
+                    image.style.opacity = "1";
+
+                    log(
+                        `이미지를 불러오지 못했습니다: ${IMAGES[imageIndex]}`,
+                        "error"
+                    );
+
+                };
+
+        },
+        250
+    );
+
+    updateImageIndicators();
+}
+
+
+/* =========================================================
+   인디케이터 갱신
+========================================================= */
+
+function updateImageIndicators() {
+
+    const buttons =
+        document.querySelectorAll(
+            ".image-indicator"
+        );
+
+    buttons.forEach(
+        (button, index) => {
+
+            button.classList.toggle(
+                "active",
+                index === imageIndex
             );
 
         }
     );
+}
+
+
+/* =========================================================
+   이미지 자동 순환
+========================================================= */
+
+function startImageTimer() {
+
+    clearInterval(imageTimer);
+
+    imageTimer =
+        setInterval(
+            () => {
+
+                showImage(
+                    imageIndex + 1
+                );
+
+            },
+            15000
+        );
+}
+
+
+function restartImageTimer() {
+
+    startImageTimer();
 
 }
 
 
-/* =========================================
-   Mojang 버전 Manifest
-   ========================================= */
+/* =========================================================
+   버전 Manifest 불러오기
+========================================================= */
 
 async function fetchVersionManifest() {
 
-    try {
-
-        log(
-            "Mojang 공식 버전 Manifest를 불러오는 중...",
-            "info"
+    const select =
+        document.getElementById(
+            "java-version"
         );
 
+    select.disabled = true;
+
+    select.innerHTML =
+        `<option value="">
+            버전 불러오는 중...
+        </option>`;
+
+    setVersionStatus(
+        "Mojang 버전 manifest를 불러오는 중..."
+    );
+
+    log(
+        "Minecraft Java Edition 버전 목록 요청 시작...",
+        "info"
+    );
+
+    try {
 
         const response =
             await fetch(
-                MOJANG_MANIFEST_URL
-            );
+                MOJANG_MANIFEST_URL,
+                {
+                    method: "GET",
 
+                    cache: "no-store"
+                }
+            );
 
         if (!response.ok) {
 
@@ -1074,118 +1008,161 @@ async function fetchVersionManifest() {
 
         }
 
-
         const data =
             await response.json();
 
-
         if (
             !data ||
-            !Array.isArray(
-                data.versions
-            )
+            !Array.isArray(data.versions)
         ) {
 
             throw new Error(
-                "버전 데이터 형식이 올바르지 않습니다."
+                "manifest의 versions 배열을 찾을 수 없습니다."
             );
 
         }
 
-
         allVersions =
             data.versions;
 
-
         log(
-            `성공: 총 ${allVersions.length}개의 Minecraft Java 버전을 불러왔습니다.`,
+            `성공: ${allVersions.length}개의 Minecraft 버전을 받았습니다.`,
             "success"
         );
 
+        setVersionStatus(
+            `버전 ${allVersions.length}개 로딩 완료`,
+            "success"
+        );
 
         filterVersions();
 
+    }
+    catch (error) {
 
-        const select =
-            document.getElementById(
-                "java-version"
-            );
-
-        select.disabled = false;
-
-
-        updateVersionStatus();
-
-
-    } catch (error) {
-
-        console.error(error);
-
+        console.error(
+            "Minecraft version manifest error:",
+            error
+        );
 
         log(
-            `Mojang 버전 Manifest 불러오기 실패: ${error.message}`,
+            `버전 로딩 실패: ${error.message}`,
             "error"
         );
 
+        setVersionStatus(
+            `버전 로딩 실패: ${error.message}`,
+            "error"
+        );
 
-        const select =
-            document.getElementById(
-                "java-version"
-            );
+        select.disabled = true;
 
-
-        select.innerHTML = `
-            <option value="">
+        select.innerHTML =
+            `<option value="">
                 버전 로딩 실패
-            </option>
-        `;
+            </option>`;
 
     }
-
 }
 
 
-/* =========================================
+/* =========================================================
    버전 필터
-   ========================================= */
+========================================================= */
 
 function filterVersions() {
-
-    const typeFilter =
-        document.getElementById(
-            "version-type"
-        ).value;
-
 
     const select =
         document.getElementById(
             "java-version"
         );
 
+    const type =
+        document.getElementById(
+            "version-type"
+        ).value;
+
+    const search =
+        document.getElementById(
+            "version-search"
+        ).value
+        .trim()
+        .toLowerCase();
 
     select.innerHTML = "";
 
-
-    const filtered =
+    let filtered =
         allVersions.filter(
             version => {
 
-                if (
-                    typeFilter === "all"
-                ) {
+                const typeMatch =
+                    type === "all" ||
+                    version.type === type;
 
-                    return true;
-
-                }
+                const searchMatch =
+                    !search ||
+                    version.id
+                        .toLowerCase()
+                        .includes(search);
 
                 return (
-                    version.type ===
-                    typeFilter
+                    typeMatch &&
+                    searchMatch
                 );
 
             }
         );
 
+    /*
+     * manifest는 최신 버전부터 오는 경우가
+     * 대부분이지만, 확실하게 날짜순으로 정렬.
+     */
+
+    filtered.sort(
+        (a, b) => {
+
+            const dateA =
+                new Date(
+                    a.releaseTime || 0
+                ).getTime();
+
+            const dateB =
+                new Date(
+                    b.releaseTime || 0
+                ).getTime();
+
+            return dateB - dateA;
+
+        }
+    );
+
+    if (filtered.length === 0) {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value = "";
+
+        option.textContent =
+            "조건에 맞는 버전 없음";
+
+        select.appendChild(
+            option
+        );
+
+        select.disabled = true;
+
+        selectedVersion = null;
+
+        document.getElementById(
+            "launch-btn"
+        ).disabled = true;
+
+        return;
+
+    }
 
     filtered.forEach(
         version => {
@@ -1195,23 +1172,25 @@ function filterVersions() {
                     "option"
                 );
 
-
             option.value =
                 version.id;
 
-
-            option.innerText =
+            option.textContent =
                 `${version.id} (${version.type})`;
 
+            /*
+             * 중요:
+             *
+             * JSON URL을 직접 만들지 않고
+             * Mojang manifest가 제공한 URL을
+             * 그대로 사용한다.
+             */
 
             option.dataset.jsonUrl =
-                version.url;
-
+                version.url || "";
 
             option.dataset.releaseTime =
-                version.releaseTime ||
-                "";
-
+                version.releaseTime || "";
 
             select.appendChild(
                 option
@@ -1220,597 +1199,191 @@ function filterVersions() {
         }
     );
 
+    select.disabled = false;
 
-    if (
-        filtered.length > 0
-    ) {
+    selectedVersion =
+        filtered[0];
 
-        select.value =
-            filtered[0].id;
+    select.value =
+        filtered[0].id;
 
-    }
-
-
-    updateVersionStatus();
+    document.getElementById(
+        "launch-btn"
+    ).disabled = false;
 
 }
 
 
-/* =========================================
-   버전 정보 표시
-   ========================================= */
+/* =========================================================
+   버전 선택 변경
+========================================================= */
 
-function updateVersionStatus() {
+document
+    .getElementById("java-version")
+    .addEventListener(
+        "change",
+        () => {
+
+            const select =
+                document.getElementById(
+                    "java-version"
+                );
+
+            const selected =
+                allVersions.find(
+                    version =>
+                        version.id ===
+                        select.value
+                );
+
+            selectedVersion =
+                selected || null;
+
+        }
+    );
+
+
+/* =========================================================
+   Microsoft 로그인
+========================================================= */
+
+/*
+ * 주의:
+ *
+ * 실제 Microsoft 인증에는
+ * Azure에서 발급받은 Client ID와
+ * 서버 측 token exchange가 필요하다.
+ *
+ * 현재는 UI만 준비한다.
+ */
+
+function startMicrosoftOAuth() {
+
+    log(
+        "Microsoft 로그인 기능은 OAuth 서버 연결이 필요합니다.",
+        "info"
+    );
+
+    alert(
+        "Microsoft 계정 로그인 기능을 사용하려면\n" +
+        "Azure OAuth Client ID와 인증 서버 설정이 필요합니다."
+    );
+
+}
+
+
+/* =========================================================
+   게임 실행
+========================================================= */
+
+function launchGameEngine() {
 
     const select =
         document.getElementById(
             "java-version"
         );
 
-    const status =
-        document.getElementById(
-            "version-status"
-        );
-
-
-    if (
-        !select ||
-        !status
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        !select.value
-    ) {
-
-        status.textContent =
-            "";
-
-        return;
-
-    }
-
+    const version =
+        select.value;
 
     const option =
         select.options[
             select.selectedIndex
         ];
 
-
-    const releaseTime =
-        option?.dataset?.releaseTime;
-
-
-    if (releaseTime) {
-
-        const date =
-            new Date(
-                releaseTime
-            );
-
-
-        if (
-            !Number.isNaN(
-                date.getTime()
-            )
-        ) {
-
-            status.textContent =
-                `출시일: ${date.toLocaleDateString(
-                    "ko-KR"
-                )}`;
-
-            return;
-
-        }
-
-    }
-
-
-    status.textContent =
-        "Mojang 공식 버전";
-
-
-}
-
-
-/* =========================================
-   Microsoft 로그인
-   ========================================= */
-
-function startMicrosoftOAuth() {
-
-    log(
-        "Microsoft OAuth 로그인 준비 중...",
-        "info"
-    );
-
-
-    /*
-     * 현재 Client ID가 실제 Azure App ID가 아니므로
-     * 여기서는 실제 로그인 페이지로 이동시키지 않는다.
-     *
-     * 나중에 Azure Client ID를 넣으면
-     * OAuth 연결 단계로 확장할 수 있다.
-     */
-
-    if (
-        !CLIENT_ID ||
-        CLIENT_ID ===
-        "00000000-0000-0000-0000-000000000000"
-    ) {
+    if (!version || !option) {
 
         log(
-            "Microsoft Client ID가 아직 설정되지 않았습니다.",
+            "Minecraft 버전을 먼저 선택해주세요.",
             "error"
         );
 
-        alert(
-            "Microsoft 로그인은 Azure Client ID를 설정한 후 사용할 수 있습니다."
+        return;
+
+    }
+
+    const jsonUrl =
+        option.dataset.jsonUrl;
+
+    if (!jsonUrl) {
+
+        log(
+            "선택한 버전에 대한 version JSON URL이 없습니다.",
+            "error"
         );
 
         return;
 
     }
-
-
-    const scopes =
-        encodeURIComponent(
-            "XboxLive.signin offline_access"
-        );
-
-
-    const authUrl =
-        "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize" +
-        `?client_id=${encodeURIComponent(CLIENT_ID)}` +
-        "&response_type=code" +
-        `&redirect_uri=${encodeURIComponent(
-            REDIRECT_URI
-        )}` +
-        `&scope=${scopes}` +
-        "&prompt=select_account";
-
-
-    window.location.href =
-        authUrl;
-
-}
-
-
-/* =========================================
-   OAuth Callback
-   ========================================= */
-
-function handleOAuthCallback() {
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-
-    const code =
-        params.get("code");
-
-
-    if (!code) {
-
-        return;
-
-    }
-
 
     /*
-     * 중요:
-     * 브라우저에서 받은 authorization code를
-     * 바로 Minecraft 토큰으로 바꾸는 것은 아니다.
-     *
-     * 실제 OAuth token exchange는
-     * 별도의 안전한 백엔드가 필요하다.
+     * 실제 게임 실행 단계는
+     * mainpage.html에서 담당한다.
      */
 
+    const params =
+        new URLSearchParams();
+
+    params.set(
+        "version",
+        version
+    );
+
+    params.set(
+        "json",
+        jsonUrl
+    );
+
+    params.set(
+        "username",
+        "Player"
+    );
+
+    params.set(
+        "uuid",
+        "00000000000000000000000000000000"
+    );
+
     log(
-        "Microsoft 인증 코드를 수신했습니다.",
+        `${version} 실행 준비 중...`,
         "success"
     );
 
-
-    log(
-        "Token 교환 단계는 별도의 인증 서버 연결이 필요합니다.",
-        "info"
-    );
-
-
-    /*
-     * URL에서 code 제거
-     */
-
-    window.history.replaceState(
-        {},
-        document.title,
-        window.location.pathname
-    );
+    window.location.href =
+        `./mainpage.html?${params.toString()}`;
 
 }
 
 
-/* =========================================
-   로딩 UI
-   ========================================= */
-
-function showLoading(
-    title,
-    message,
-    progress = 0
-) {
-
-    const loading =
-        document.getElementById(
-            "loading"
-        );
-
-    const titleElement =
-        document.getElementById(
-            "loading-title"
-        );
-
-    const textElement =
-        document.getElementById(
-            "loading-text"
-        );
-
-    const progressElement =
-        document.getElementById(
-            "loading-progress"
-        );
-
-    const percentElement =
-        document.getElementById(
-            "loading-percent"
-        );
-
-
-    loading.style.display =
-        "flex";
-
-
-    titleElement.textContent =
-        title;
-
-
-    textElement.textContent =
-        message;
-
-
-    progress =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                progress
-            )
-        );
-
-
-    progressElement.style.width =
-        `${progress}%`;
-
-
-    percentElement.textContent =
-        `${Math.round(progress)}%`;
-
-}
-
-
-function hideLoading() {
-
-    const loading =
-        document.getElementById(
-            "loading"
-        );
-
-
-    loading.style.display =
-        "none";
-
-}
-
-
-/* =========================================
-   핵심:
-   index.html → mainpage.html 연결
-   ========================================= */
-
-async function launchGameEngine() {
-
-    const versionSelect =
-        document.getElementById(
-            "java-version"
-        );
-
-
-    const launchButton =
-        document.getElementById(
-            "launch-btn"
-        );
-
-
-    if (
-        !versionSelect ||
-        !versionSelect.value
-    ) {
-
-        log(
-            "먼저 Minecraft 버전을 선택해주세요.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const selectedVersion =
-        versionSelect.value;
-
-
-    const selectedOption =
-        versionSelect.options[
-            versionSelect.selectedIndex
-        ];
-
-
-    const jsonUrl =
-        selectedOption?.dataset?.jsonUrl ||
-        "";
-
-
-    /*
-     * 버튼 잠금
-     */
-
-    launchButton.disabled =
-        true;
-
-
-    showLoading(
-        "MojoCraft 준비 중",
-        `Minecraft ${selectedVersion} Core Engine으로 연결하는 중...`,
-        20
-    );
-
-
-    log(
-        `Minecraft ${selectedVersion} 선택`,
-        "info"
-    );
-
-
-    try {
-
-        /*
-         * mainpage.html에 전달할 파라미터
-         */
-
-        const params =
-            new URLSearchParams();
-
-
-        params.set(
-            "version",
-            selectedVersion
-        );
-
-
-        if (jsonUrl) {
-
-            params.set(
-                "json",
-                jsonUrl
-            );
-
-        }
-
-
-        /*
-         * 로그인 정보가 존재할 경우 전달
-         */
-
-        if (
-            authSession.username
-        ) {
-
-            params.set(
-                "username",
-                authSession.username
-            );
-
-        }
-
-
-        if (
-            authSession.uuid
-        ) {
-
-            params.set(
-                "uuid",
-                authSession.uuid
-            );
-
-        }
-
-
-        /*
-         * 현재 인증 토큰이 있다면 전달
-         *
-         * 실제 서비스에서는 access token을
-         * URL에 넣지 않는 것이 좋다.
-         */
-
-        /*
-        if (authSession.minecraftToken) {
-            params.set(
-                "token",
-                authSession.minecraftToken
-            );
-        }
-        */
-
-
-        log(
-            `Minecraft ${selectedVersion} 실행 준비...`,
-            "info"
-        );
-
-
-        showLoading(
-            "Core Engine 연결",
-            `Minecraft ${selectedVersion} 정보를 전달하는 중...`,
-            55
-        );
-
-
-        /*
-         * 짧은 지연을 주어 UI가 갱신되도록 함
-         */
-
-        await new Promise(
-            resolve =>
-                setTimeout(
-                    resolve,
-                    300
-                )
-        );
-
-
-        log(
-            "mainpage.html로 연결합니다.",
-            "success"
-        );
-
-
-        showLoading(
-            "Core Engine 연결",
-            "Minecraft 파일 엔진으로 이동하는 중...",
-            100
-        );
-
-
-        await new Promise(
-            resolve =>
-                setTimeout(
-                    resolve,
-                    250
-                )
-        );
-
-
-        /*
-         * ★ 실제 연결 ★
-         */
-
-        window.location.href =
-            "./mainpage.html?" +
-            params.toString();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-
-        hideLoading();
-
-
-        log(
-            `Core Engine 연결 실패: ${error.message}`,
-            "error"
-        );
-
-
-        launchButton.disabled =
-            false;
-
-    }
-
-}
-
-
-/* =========================================
+/* =========================================================
    초기화
-   ========================================= */
+========================================================= */
+
+async function initialize() {
+
+    log(
+        "MojoCraft Launcher 초기화...",
+        "info"
+    );
+
+    createImageIndicators();
+
+    showImage(0);
+
+    startImageTimer();
+
+    await fetchVersionManifest();
+
+}
+
+
+/* =========================================================
+   시작
+========================================================= */
 
 window.addEventListener(
     "DOMContentLoaded",
-    async () => {
-
-        log(
-            "MojoCraft Web Launcher 초기화 완료.",
-            "success"
-        );
-
-
-        /*
-         * 이미지
-         */
-
-        createImageIndicators();
-
-        showGameImage(0);
-
-        startImageRotation();
-
-
-        /*
-         * 버전 선택
-         */
-
-        const versionSelect =
-            document.getElementById(
-                "java-version"
-            );
-
-
-        versionSelect.addEventListener(
-            "change",
-            updateVersionStatus
-        );
-
-
-        /*
-         * OAuth callback 확인
-         */
-
-        handleOAuthCallback();
-
-
-        /*
-         * Mojang 버전 목록
-         */
-
-        await fetchVersionManifest();
-
-
-        /*
-         * 현재는 실제 Microsoft 로그인 없이도
-         * Core Engine 테스트가 가능하도록 한다.
-         */
-
-        document.getElementById(
-            "launch-btn"
-        ).disabled = false;
-
-
-        log(
-            "게임 실행 버튼이 활성화되었습니다.",
-            "success"
-        );
-
-    }
+    initialize
 );
 
 </script>
