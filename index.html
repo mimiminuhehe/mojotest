@@ -2,6 +2,7 @@
 <html lang="ko">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -10,6 +11,7 @@
     >
 
     <title>MojoCraft Web</title>
+
 
     <style>
 
@@ -20,6 +22,7 @@
         * {
             box-sizing: border-box;
         }
+
 
         html,
         body {
@@ -39,6 +42,7 @@
             background: #111;
             color: #fff;
         }
+
 
         body {
             display: flex;
@@ -60,7 +64,7 @@
 
 
         /* =====================================================
-           메인 영역
+           메인
         ===================================================== */
 
         #main {
@@ -78,7 +82,7 @@
 
 
         /* =====================================================
-           이미지 화면
+           사진 화면
         ===================================================== */
 
         #screen-container {
@@ -87,7 +91,6 @@
             flex: 1;
 
             width: 100%;
-
             min-height: 0;
 
             overflow: hidden;
@@ -99,7 +102,8 @@
         #gameImage {
             position: absolute;
 
-            inset: 0;
+            top: 0;
+            left: 0;
 
             width: 100%;
             height: 100%;
@@ -111,7 +115,9 @@
             opacity: 1;
 
             transition:
-                opacity 0.8s ease;
+                opacity 0.45s ease;
+
+            z-index: 1;
         }
 
 
@@ -121,70 +127,110 @@
 
 
         /* =====================================================
-           사진 페이지 표시
+           ★ 사진 인디케이터
         ===================================================== */
 
         #image-indicators {
             position: absolute;
 
-            left: 50%;
-            bottom: 20px;
+            left: 0;
+            right: 0;
 
-            transform: translateX(-50%);
+            bottom: 22px;
+
+            width: 100%;
+
+            display: flex;
+
+            flex-direction: row;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 10px;
+
+            z-index: 1000;
+
+            pointer-events: auto;
+        }
+
+
+        .image-indicator {
+            appearance: none;
+            -webkit-appearance: none;
 
             display: flex;
 
             align-items: center;
             justify-content: center;
 
-            gap: 8px;
+            width: 16px;
+            height: 16px;
 
-            z-index: 5;
-        }
+            min-width: 16px;
+            min-height: 16px;
 
-
-        .image-indicator {
-            width: 10px;
-            height: 10px;
-
+            margin: 0;
             padding: 0;
 
-            border: none;
+            border: 2px solid rgba(255,255,255,0.95);
 
             border-radius: 50%;
 
-            background:
-                rgba(255, 255, 255, 0.55);
+            background: rgba(0,0,0,0.35);
+
+            box-shadow:
+                0 1px 5px rgba(0,0,0,0.7);
 
             cursor: pointer;
 
+            pointer-events: auto;
+
+            opacity: 1;
+
             transition:
-                transform 0.2s ease,
-                background 0.2s ease,
-                opacity 0.2s ease;
+                transform 0.15s ease,
+                background 0.15s ease,
+                box-shadow 0.15s ease;
         }
 
+
+        /* 마우스를 올렸을 때 */
 
         .image-indicator:hover {
-            transform: scale(1.3);
+            transform: scale(1.25);
 
             background:
-                rgba(255, 255, 255, 0.9);
+                rgba(255,255,255,0.75);
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.8);
         }
 
 
-        .image-indicator.active {
-            width: 11px;
-            height: 11px;
+        /* 현재 사진 */
 
+        .image-indicator.active {
             background: #fff;
 
-            transform: scale(1.1);
+            border-color: #fff;
+
+            transform: scale(1.15);
+
+            box-shadow:
+                0 1px 7px rgba(0,0,0,0.8);
+        }
+
+
+        .image-indicator:focus {
+            outline: 2px solid #fff;
+
+            outline-offset: 3px;
         }
 
 
         /* =====================================================
-           로딩 화면
+           로딩
         ===================================================== */
 
         #loading {
@@ -198,9 +244,9 @@
             justify-content: center;
 
             background:
-                rgba(0, 0, 0, 0.65);
+                rgba(0,0,0,0.65);
 
-            z-index: 10;
+            z-index: 2000;
         }
 
 
@@ -210,18 +256,18 @@
 
 
         .loading-box {
-            width: min(420px, 85%);
+            width: min(420px,85%);
 
             padding: 24px;
 
             background:
-                rgba(20, 20, 20, 0.95);
+                rgba(20,20,20,0.96);
 
             border-radius: 12px;
 
             box-shadow:
                 0 10px 40px
-                rgba(0, 0, 0, 0.5);
+                rgba(0,0,0,0.5);
         }
 
 
@@ -338,7 +384,7 @@
 
 
         /* =====================================================
-           사이드바 헤더
+           헤더
         ===================================================== */
 
         .sidebar-header {
@@ -450,55 +496,65 @@
         ===================================================== */
 
         button {
+            font-family: inherit;
+        }
+
+
+        #login-button,
+        #launch-button,
+        .filter-button {
+            cursor: pointer;
+        }
+
+
+        #login-button {
             width: 100%;
+
+            padding: 12px;
+
+            border:
+                1px solid #444;
+
+            border-radius: 8px;
+
+            background: #2b2b2b;
+
+            color: #fff;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+
+        #login-button:hover {
+            filter: brightness(1.1);
+        }
+
+
+        #launch-button {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-top: 14px;
 
             border: 0;
 
             border-radius: 8px;
 
-            padding: 12px;
-
-            font-size: 14px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-            transition:
-                0.15s ease;
-        }
-
-
-        button:hover {
-            filter: brightness(1.1);
-        }
-
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-
-        #login-button {
-            background: #2b2b2b;
-
-            color: #fff;
-
-            border:
-                1px solid #444;
-        }
-
-
-        #launch-button {
             background: #4caf50;
 
             color: #fff;
 
             font-size: 16px;
 
-            padding: 14px;
+            font-weight: bold;
+        }
 
-            margin-top: 14px;
+
+        #launch-button:hover {
+            filter: brightness(1.08);
         }
 
 
@@ -510,7 +566,7 @@
 
 
         /* =====================================================
-           버전 영역
+           버전
         ===================================================== */
 
         .version-section {
@@ -542,16 +598,26 @@
         .filter-button {
             flex: 1;
 
-            padding: 8px 4px;
+            padding:
+                8px 4px;
+
+            border:
+                1px solid #333;
+
+            border-radius: 8px;
 
             background: #242424;
 
             color: #aaa;
 
-            border:
-                1px solid #333;
-
             font-size: 11px;
+
+            font-weight: bold;
+        }
+
+
+        .filter-button:hover {
+            filter: brightness(1.1);
         }
 
 
@@ -570,10 +636,10 @@
             padding:
                 10px 11px;
 
-            border-radius: 7px;
-
             border:
                 1px solid #383838;
+
+            border-radius: 7px;
 
             background: #222;
 
@@ -733,21 +799,18 @@
 
 
             #image-indicators {
-                bottom: 14px;
+                bottom: 16px;
 
-                gap: 7px;
+                gap: 8px;
             }
 
 
             .image-indicator {
-                width: 9px;
-                height: 9px;
-            }
+                width: 15px;
+                height: 15px;
 
-
-            .image-indicator.active {
-                width: 10px;
-                height: 10px;
+                min-width: 15px;
+                min-height: 15px;
             }
 
         }
@@ -764,7 +827,7 @@
 
 
     <!-- =====================================================
-         메인 화면
+         메인
     ===================================================== -->
 
     <main id="main">
@@ -773,9 +836,7 @@
         <section id="screen-container">
 
 
-            <!--
-                Minecraft 배경 사진
-            -->
+            <!-- Minecraft 사진 -->
 
             <img
                 id="gameImage"
@@ -784,11 +845,9 @@
             >
 
 
-            <!--
-                사진 페이지 표시
-
-                ● ○ ○ ○ ○
-            -->
+            <!-- =================================================
+                 ★ 사진 인디케이터
+            ================================================= -->
 
             <div
                 id="image-indicators"
@@ -838,9 +897,7 @@
         </section>
 
 
-        <!-- =================================================
-             로그
-        ================================================= -->
+        <!-- 로그 -->
 
         <section
             id="log-panel"
@@ -857,8 +914,6 @@
 
     <aside id="sidebar">
 
-
-        <!-- 헤더 -->
 
         <header
             class="sidebar-header"
@@ -890,7 +945,6 @@
                 class="account-card"
             >
 
-
                 <div
                     class="account-avatar"
                 >
@@ -901,7 +955,6 @@
                 <div
                     class="account-info"
                 >
-
 
                     <div
                         id="account-name"
@@ -918,9 +971,7 @@
                         Microsoft 계정
                     </div>
 
-
                 </div>
-
 
             </div>
 
@@ -937,7 +988,7 @@
 
 
         <!-- =================================================
-             버전
+             Minecraft 버전
         ================================================= -->
 
         <section
@@ -955,7 +1006,6 @@
             <div
                 class="version-filter"
             >
-
 
                 <button
                     class="filter-button active"
@@ -979,7 +1029,6 @@
                 >
                     전체
                 </button>
-
 
             </div>
 
@@ -1051,7 +1100,7 @@
 
 
     /* =====================================================
-       배경 이미지 5장
+       사진 5장
     ===================================================== */
 
     const backgroundImages = [
@@ -1069,9 +1118,8 @@
     ];
 
 
-
     /*
-        현재 이미지 번호
+        현재 사진 번호
 
         0 = 첫 번째
         1 = 두 번째
@@ -1168,75 +1216,7 @@
 
 
     /* =====================================================
-       로그
-    ===================================================== */
-
-    function addLog(
-        message,
-        type = "normal"
-    ) {
-
-
-        const line =
-            document.createElement(
-                "div"
-            );
-
-
-        line.className =
-            "log-line";
-
-
-        if (type === "success") {
-
-            line.classList.add(
-                "log-success"
-            );
-
-        }
-
-
-        if (type === "error") {
-
-            line.classList.add(
-                "log-error"
-            );
-
-        }
-
-
-        if (type === "info") {
-
-            line.classList.add(
-                "log-info"
-            );
-
-        }
-
-
-        const time =
-            new Date()
-                .toLocaleTimeString();
-
-
-        line.textContent =
-            `[${time}] ${message}`;
-
-
-        logPanel.appendChild(
-            line
-        );
-
-
-        logPanel.scrollTop =
-            logPanel.scrollHeight;
-
-    }
-
-
-
-    /* =====================================================
-       페이지 원 생성
+       사진 인디케이터 생성
     ===================================================== */
 
     function createImageIndicators() {
@@ -1246,53 +1226,56 @@
             "";
 
 
-        backgroundImages.forEach(
-            (image, index) => {
+        for (
+            let i = 0;
+            i < backgroundImages.length;
+            i++
+        ) {
 
 
-                const indicator =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                indicator.type =
-                    "button";
-
-
-                indicator.className =
-                    "image-indicator";
-
-
-                indicator.setAttribute(
-                    "aria-label",
-                    `${index + 1}번째 사진`
+            const indicator =
+                document.createElement(
+                    "button"
                 );
 
 
-                /*
-                    원을 클릭하면
-                    해당 사진으로 이동
-                */
-
-                indicator.addEventListener(
-                    "click",
-                    () => {
-
-                        showBackgroundImage(
-                            index
-                        );
-
-                    }
-                );
+            indicator.type =
+                "button";
 
 
-                indicatorContainer.appendChild(
-                    indicator
-                );
+            indicator.className =
+                "image-indicator";
 
-            }
-        );
+
+            indicator.setAttribute(
+                "aria-label",
+                `${i + 1}번째 사진 보기`
+            );
+
+
+            /*
+                클릭하면 해당 사진으로 이동
+            */
+
+            indicator.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+                    showBackgroundImage(i);
+
+                }
+            );
+
+
+            indicatorContainer.appendChild(
+                indicator
+            );
+
+        }
 
 
         updateIndicators();
@@ -1302,7 +1285,7 @@
 
 
     /* =====================================================
-       현재 페이지 원 표시
+       현재 인디케이터 표시
     ===================================================== */
 
     function updateIndicators() {
@@ -1315,7 +1298,10 @@
 
 
         indicators.forEach(
-            (indicator, index) => {
+            function(
+                indicator,
+                index
+            ) {
 
 
                 if (
@@ -1351,6 +1337,10 @@
     ) {
 
 
+        /*
+            잘못된 번호 방지
+        */
+
         if (
             index < 0 ||
             index >= backgroundImages.length
@@ -1362,8 +1352,8 @@
 
 
         /*
-            현재 사진이면
-            원 상태만 확인
+            같은 사진이면
+            인디케이터만 갱신
         */
 
         if (
@@ -1378,7 +1368,7 @@
 
 
         /*
-            사진을 먼저 서서히 숨김
+            현재 사진 숨기기
         */
 
         gameImage.classList.add(
@@ -1387,7 +1377,7 @@
 
 
         setTimeout(
-            () => {
+            function() {
 
 
                 currentImageIndex =
@@ -1405,11 +1395,12 @@
 
 
                 /*
-                    이미지가 로딩되면 표시
+                    이미지가 준비되면
+                    다시 나타나게 함
                 */
 
                 gameImage.onload =
-                    () => {
+                    function() {
 
 
                         gameImage.classList.remove(
@@ -1422,8 +1413,26 @@
                     };
 
 
+                /*
+                    혹시 캐시 때문에
+                    onload가 이미 처리된 경우
+                */
+
+                if (
+                    gameImage.complete
+                ) {
+
+                    gameImage.classList.remove(
+                        "fade-out"
+                    );
+
+
+                    updateIndicators();
+
+                }
+
             },
-            350
+            300
         );
 
     }
@@ -1442,8 +1451,7 @@
 
 
         /*
-            다섯 번째 다음은
-            다시 첫 번째
+            5번째 → 1번째
         */
 
         if (
@@ -1465,7 +1473,7 @@
 
 
     /* =====================================================
-       15초마다 사진 변경
+       15초마다 자동 전환
     ===================================================== */
 
     setInterval(
@@ -1476,125 +1484,179 @@
 
 
     /* =====================================================
-       기본 Minecraft 버전
+       로그
+    ===================================================== */
+
+    function addLog(
+        message,
+        type = "normal"
+    ) {
+
+
+        const line =
+            document.createElement(
+                "div"
+            );
+
+
+        line.className =
+            "log-line";
+
+
+        if (
+            type === "success"
+        ) {
+
+            line.classList.add(
+                "log-success"
+            );
+
+        }
+
+
+        if (
+            type === "error"
+        ) {
+
+            line.classList.add(
+                "log-error"
+            );
+
+        }
+
+
+        if (
+            type === "info"
+        ) {
+
+            line.classList.add(
+                "log-info"
+            );
+
+        }
+
+
+        const time =
+            new Date()
+                .toLocaleTimeString();
+
+
+        line.textContent =
+            `[${time}] ${message}`;
+
+
+        logPanel.appendChild(
+            line
+        );
+
+
+        logPanel.scrollTop =
+            logPanel.scrollHeight;
+
+    }
+
+
+
+    /* =====================================================
+       기본 버전
     ===================================================== */
 
     const fallbackVersions = [
-
 
         {
             id: "1.21.8",
             type: "release"
         },
 
-
         {
             id: "1.21.7",
             type: "release"
         },
-
 
         {
             id: "1.21.6",
             type: "release"
         },
 
-
         {
             id: "1.21.5",
             type: "release"
         },
-
 
         {
             id: "1.21.4",
             type: "release"
         },
 
-
         {
             id: "1.21.3",
             type: "release"
         },
-
 
         {
             id: "1.21.2",
             type: "release"
         },
 
-
         {
             id: "1.21.1",
             type: "release"
         },
-
 
         {
             id: "1.21",
             type: "release"
         },
 
-
         {
             id: "1.20.6",
             type: "release"
         },
-
 
         {
             id: "1.20.4",
             type: "release"
         },
 
-
         {
             id: "1.20.2",
             type: "release"
         },
-
 
         {
             id: "1.20.1",
             type: "release"
         },
 
-
         {
             id: "1.19.4",
             type: "release"
         },
-
 
         {
             id: "1.19.3",
             type: "release"
         },
 
-
         {
             id: "1.18.2",
             type: "release"
         },
-
 
         {
             id: "1.17.1",
             type: "release"
         },
 
-
         {
             id: "1.16.5",
             type: "release"
         },
 
-
         {
             id: "1.12.2",
             type: "release"
         },
-
 
         {
             id: "1.8.9",
@@ -1606,7 +1668,7 @@
 
 
     /* =====================================================
-       Mojang 버전 목록 가져오기
+       Mojang 버전 목록
     ===================================================== */
 
     async function loadVersions() {
@@ -1627,7 +1689,9 @@
                 );
 
 
-            if (!response.ok) {
+            if (
+                !response.ok
+            ) {
 
                 throw new Error(
                     "버전 목록 요청 실패"
@@ -1656,24 +1720,28 @@
 
             versions =
                 data.versions.map(
-                    version => ({
+                    function(version) {
 
-                        id:
-                            version.id,
+                        return {
 
-                        type:
-                            version.type,
+                            id:
+                                version.id,
 
-                        url:
-                            version.url,
+                            type:
+                                version.type,
 
-                        time:
-                            version.time,
+                            url:
+                                version.url,
 
-                        releaseTime:
-                            version.releaseTime
+                            time:
+                                version.time,
 
-                    })
+                            releaseTime:
+                                version.releaseTime
+
+                        };
+
+                    }
                 );
 
 
@@ -1708,7 +1776,7 @@
 
 
     /* =====================================================
-       버전 목록 표시
+       버전 렌더링
     ===================================================== */
 
     function renderVersions() {
@@ -1726,12 +1794,8 @@
 
         const filteredVersions =
             versions.filter(
-                version => {
+                function(version) {
 
-
-                    /*
-                        Release / Snapshot / 전체
-                    */
 
                     if (
                         currentFilter !==
@@ -1744,10 +1808,6 @@
 
                     }
 
-
-                    /*
-                        검색
-                    */
 
                     if (
                         searchText &&
@@ -1809,7 +1869,7 @@
 
 
         filteredVersions.forEach(
-            version => {
+            function(version) {
 
 
                 const item =
@@ -1878,7 +1938,7 @@
 
                 item.addEventListener(
                     "click",
-                    () => {
+                    function() {
 
                         selectVersion(
                             version
@@ -1933,7 +1993,7 @@
 
 
     /* =====================================================
-       필터 버튼
+       필터
     ===================================================== */
 
     document
@@ -1941,12 +2001,12 @@
             ".filter-button"
         )
         .forEach(
-            button => {
+            function(button) {
 
 
                 button.addEventListener(
                     "click",
-                    () => {
+                    function() {
 
 
                         document
@@ -1954,7 +2014,7 @@
                                 ".filter-button"
                             )
                             .forEach(
-                                btn => {
+                                function(btn) {
 
                                     btn.classList.remove(
                                         "active"
@@ -1984,12 +2044,12 @@
 
 
     /* =====================================================
-       버전 검색
+       검색
     ===================================================== */
 
     versionSearch.addEventListener(
         "input",
-        () => {
+        function() {
 
             renderVersions();
 
@@ -2004,7 +2064,7 @@
 
     loginButton.addEventListener(
         "click",
-        () => {
+        function() {
 
 
             addLog(
@@ -2051,10 +2111,12 @@
 
     launchButton.addEventListener(
         "click",
-        async () => {
+        async function() {
 
 
-            if (!selectedVersion) {
+            if (
+                !selectedVersion
+            ) {
 
 
                 alert(
@@ -2095,7 +2157,6 @@
 
             /*
                 현재는 UI 테스트용
-                진행률
             */
 
             while (
@@ -2104,11 +2165,14 @@
 
 
                 await new Promise(
-                    resolve =>
+                    function(resolve) {
+
                         setTimeout(
                             resolve,
                             80
-                        )
+                        );
+
+                    }
                 );
 
 
@@ -2141,11 +2205,14 @@
 
 
             await new Promise(
-                resolve =>
+                function(resolve) {
+
                     setTimeout(
                         resolve,
                         500
-                    )
+                    );
+
+                }
             );
 
 
@@ -2172,17 +2239,8 @@
        초기화
     ===================================================== */
 
-
-    /*
-        페이지 원 5개 생성
-    */
-
     createImageIndicators();
 
-
-    /*
-        시작 로그
-    */
 
     addLog(
         "MojoCraft Web Launcher 시작",
@@ -2191,16 +2249,13 @@
 
 
     addLog(
-        "배경 이미지 5장을 15초마다 자동으로 변경합니다.",
+        "사진 5장을 15초마다 자동으로 전환합니다.",
         "info"
     );
 
 
-    /*
-        Minecraft 버전 불러오기
-    */
-
     loadVersions();
+
 
 </script>
 
