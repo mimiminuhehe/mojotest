@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  >
+
+  <title>Web Minecraft</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="launcher">
+
+    <header>
+      <div class="logo">WEB<span>MINECRAFT</span></div>
+      <div id="status" class="status">준비됨</div>
+    </header>
+
+    <section class="game">
+
+      <canvas id="gameCanvas"></canvas>
+
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+
+        <h2 id="loadingTitle">Minecraft 준비 중</h2>
+        <p id="loadingText">게임 환경을 초기화하고 있습니다...</p>
+
+        <div class="progress">
+          <div id="progressBar"></div>
+        </div>
+      </div>
+
+      <div id="gameUI" class="game-ui hidden">
+
+        <div class="crosshair">
+          +
+        </div>
+
+        <div class="debug">
+          Web Minecraft Prototype<br>
+          Renderer: WebGL<br>
+          Runtime: Browser
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="controls">
+
+      <label>
+        Minecraft 버전
+        <select id="version">
+          <option value="1.21.8">1.21.8</option>
+          <option value="1.21.7">1.21.7</option>
+          <option value="1.20.1">1.20.1</option>
+          <option value="1.19.4">1.19.4</option>
+        </select>
+      </label>
+
+      <button id="launchButton">
+        게임 시작
+      </button>
+
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+
+</body>
+</html>
