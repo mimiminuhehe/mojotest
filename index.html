@@ -1,1756 +1,1461 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MojoCraft Web</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family:
+                Arial,
+                "Noto Sans KR",
+                sans-serif;
+            background: #111;
+            color: #fff;
+        }
+
+        body {
+            display: flex;
+        }
+
+        /* =========================
+           MAIN CONTENT
+        ========================= */
+
+        #main-content {
+            flex: 1;
+            min-width: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #111;
+        }
+
+        /* =========================
+           GAME SCREEN
+        ========================= */
+
+        #screen-container {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #gameImage {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* 이미지 위 어두운 효과 */
+        #screen-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(0, 0, 0, 0.05),
+                    rgba(0, 0, 0, 0.18)
+                );
+        }
+
+        /* =========================
+           GAME OVERLAY
+        ========================= */
+
+        #game-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .crosshair {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            transform: translate(-50%, -50%);
+            opacity: 0.8;
+        }
+
+        .crosshair::before,
+        .crosshair::after {
+            content: "";
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .crosshair::before {
+            width: 2px;
+            height: 20px;
+            left: 9px;
+            top: 0;
+        }
+
+        .crosshair::after {
+            width: 20px;
+            height: 2px;
+            left: 0;
+            top: 9px;
+        }
+
+        .debug {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 8px 10px;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.55);
+            font-size: 12px;
+            color: #fff;
+        }
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        #loading {
+            position: absolute;
+            inset: 0;
+            z-index: 20;
+
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(0, 0, 0, 0.82);
+        }
+
+        #loading.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 45px;
+            height: 45px;
+
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #55d66b;
+
+            border-radius: 50%;
+
+            animation: spin 1s linear infinite;
+
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #loadingText {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .progress {
+            width: min(420px, 70%);
+            height: 8px;
+
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: #55d66b;
+            transition: width 0.25s ease;
+        }
+
+        /* =========================
+           LOG PANEL
+        ========================= */
+
+        #log-panel {
+            height: 150px;
+            flex-shrink: 0;
+
+            overflow-y: auto;
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+            background: #0b0b0b;
+            border-top: 1px solid #242424;
 
-<title>Web Minecraft Launcher</title>
+            padding: 10px;
 
-<style>
+            font-family:
+                Consolas,
+                "Courier New",
+                monospace;
 
-/* =========================================================
-   RESET
-========================================================= */
+            font-size: 12px;
+        }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+        .log-entry {
+            margin-bottom: 5px;
+            line-height: 1.4;
+            color: #aaa;
+        }
 
-html,
-body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
+        .log-entry.info {
+            color: #bdbdbd;
+        }
 
-body {
-    font-family:
-        "Segoe UI",
-        Arial,
-        sans-serif;
+        .log-entry.success {
+            color: #62df78;
+        }
 
-    background: #121214;
-    color: white;
+        .log-entry.warning {
+            color: #e9c85d;
+        }
 
-    display: flex;
-}
+        .log-entry.error {
+            color: #ff6b6b;
+        }
 
+        /* =========================
+           SIDEBAR
+        ========================= */
 
-/* =========================================================
-   MAIN CONTENT
-========================================================= */
+        #sidebar {
+            width: 320px;
+            height: 100vh;
+            flex-shrink: 0;
 
-#main-content {
-    flex: 1;
-    min-width: 0;
+            background: #181818;
 
-    display: flex;
-    flex-direction: column;
-}
+            border-left: 1px solid #2b2b2b;
 
+            padding: 22px;
 
-/* =========================================================
-   GAME SCREEN
-========================================================= */
+            overflow-y: auto;
+        }
 
-#screen-container {
+        /* =========================
+           LOGO
+        ========================= */
 
-    position: relative;
+        .logo {
+            margin-bottom: 28px;
+        }
 
-    flex: 1;
-    min-height: 0;
+        .logo-main {
+            font-size: 25px;
+            font-weight: 800;
+            color: #55d66b;
+            letter-spacing: -1px;
+        }
 
-    overflow: hidden;
+        .logo-sub {
+            margin-top: 3px;
+            color: #777;
+            font-size: 12px;
+        }
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+        /* =========================
+           ACCOUNT CARD
+        ========================= */
 
-    background: #000;
-}
+        .account-card {
+            display: flex;
+            align-items: center;
 
+            padding: 13px;
 
-#gameCanvas {
+            border-radius: 10px;
 
-    width: 100%;
-    height: 100%;
+            background: #222;
 
-    display: block;
-}
+            border: 1px solid #303030;
 
+            margin-bottom: 14px;
+        }
 
-/* =========================================================
-   GAME OVERLAY
-========================================================= */
+        .avatar {
+            width: 45px;
+            height: 45px;
 
-#game-overlay {
+            border-radius: 8px;
 
-    position: absolute;
+            background: #333;
 
-    inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    pointer-events: none;
-}
+            margin-right: 11px;
 
+            font-size: 22px;
+        }
 
-.crosshair {
+        .user-info {
+            min-width: 0;
+        }
 
-    position: absolute;
+        .username {
+            font-size: 14px;
+            font-weight: 700;
 
-    left: 50%;
-    top: 50%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-    transform:
-        translate(-50%, -50%);
+        .status {
+            margin-top: 4px;
 
-    color: white;
+            font-size: 11px;
 
-    font:
-        700 28px/1
-        monospace;
+            color: #777;
+        }
 
-    text-shadow:
-        0 2px 5px black;
-}
+        .status.logged-in {
+            color: #55d66b;
+        }
 
+        /* =========================
+           LOGIN BUTTON
+        ========================= */
 
-.debug {
+        .btn-login {
+            width: 100%;
 
-    position: absolute;
+            border: 1px solid #444;
 
-    left: 12px;
-    top: 12px;
+            background: #252525;
+            color: #fff;
 
-    padding: 7px 9px;
+            border-radius: 8px;
 
-    border-radius: 4px;
+            padding: 11px;
 
-    background:
-        rgba(0, 0, 0, 0.45);
+            cursor: pointer;
 
-    color: #ddd;
+            font-size: 13px;
 
-    font:
-        12px/1.5
-        monospace;
-}
+            transition:
+                background 0.15s,
+                border-color 0.15s;
+        }
 
+        .btn-login:hover {
+            background: #303030;
+            border-color: #555;
+        }
 
-/* =========================================================
-   LOADING SCREEN
-========================================================= */
+        /* =========================
+           DIVIDER
+        ========================= */
 
-#loading {
+        .divider {
+            height: 1px;
+            background: #2b2b2b;
 
-    position: absolute;
+            margin: 22px 0;
+        }
 
-    left: 50%;
-    top: 50%;
+        /* =========================
+           FORM
+        ========================= */
 
-    transform:
-        translate(-50%, -50%);
+        .version-group {
+            margin-bottom: 15px;
+        }
 
-    width: min(420px, 90%);
+        .version-group label {
+            display: block;
 
-    padding: 28px;
+            margin-bottom: 7px;
 
-    border-radius: 9px;
+            font-size: 12px;
 
-    background:
-        rgba(13, 13, 15, 0.95);
+            color: #999;
+        }
 
-    border:
-        1px solid #303038;
+        select {
+            width: 100%;
 
-    text-align: center;
+            padding: 11px 12px;
 
-    box-shadow:
-        0 15px 50px
-        rgba(0, 0, 0, 0.5);
-}
+            border-radius: 8px;
 
+            border: 1px solid #333;
 
-#loading h2 {
+            background: #222;
 
-    font-size: 20px;
+            color: #fff;
 
-    margin-bottom: 8px;
-}
+            outline: none;
 
+            cursor: pointer;
 
-#loading p {
+            font-size: 13px;
+        }
 
-    font-size: 13px;
+        select:hover {
+            border-color: #4a4a4a;
+        }
 
-    color: #999;
+        select:focus {
+            border-color: #55d66b;
+        }
 
-    margin-bottom: 18px;
-}
+        /* =========================
+           SEARCH
+        ========================= */
 
+        #versionSearch {
+            width: 100%;
 
-/* Spinner */
+            padding: 11px 12px;
 
-.spinner {
+            margin-top: 8px;
 
-    width: 40px;
-    height: 40px;
+            border-radius: 8px;
 
-    margin:
-        0 auto 15px;
+            border: 1px solid #333;
 
-    border:
-        4px solid #33343a;
+            background: #222;
 
-    border-top-color:
-        #76ff03;
+            color: #fff;
 
-    border-radius: 50%;
+            outline: none;
 
-    animation:
-        spin 1s linear infinite;
-}
+            font-size: 13px;
+        }
 
+        #versionSearch:focus {
+            border-color: #55d66b;
+        }
 
-@keyframes spin {
+        /* =========================
+           LAUNCH BUTTON
+        ========================= */
 
-    to {
-        transform:
-            rotate(360deg);
-    }
+        .btn-launch {
+            width: 100%;
 
-}
+            border: none;
 
+            background: #55d66b;
+            color: #071008;
 
-/* Progress */
+            border-radius: 9px;
 
-.progress {
+            padding: 14px;
 
-    width: 100%;
+            margin-top: 8px;
 
-    height: 7px;
+            font-size: 15px;
+            font-weight: 800;
 
-    background: #292a2f;
+            cursor: pointer;
 
-    border-radius: 8px;
+            transition:
+                transform 0.1s,
+                background 0.15s;
+        }
 
-    overflow: hidden;
-}
+        .btn-launch:hover {
+            background: #6ae47d;
+        }
 
+        .btn-launch:active {
+            transform: scale(0.98);
+        }
 
-#progressBar {
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-    width: 0%;
+        /* =========================
+           SMALL INFO
+        ========================= */
 
-    height: 100%;
+        .small-info {
+            margin-top: 18px;
 
-    background: #76ff03;
+            color: #666;
 
-    transition:
-        width 0.2s;
-}
+            font-size: 11px;
 
+            line-height: 1.5;
+        }
 
-/* =========================================================
-   LOG PANEL
-========================================================= */
+        /* =========================
+           MOBILE
+        ========================= */
 
-#log-panel {
+        @media (max-width: 800px) {
 
-    height: 150px;
+            body {
+                flex-direction: column;
+                overflow: auto;
+            }
 
-    flex: none;
+            #main-content {
+                width: 100%;
+                height: 70vh;
+                min-height: 500px;
+            }
 
-    padding: 10px;
+            #sidebar {
+                width: 100%;
+                height: auto;
 
-    background: #0d0d0e;
+                border-left: none;
+                border-top: 1px solid #2b2b2b;
+            }
+        }
 
-    border-top:
-        1px solid #2a2a30;
+        @media (max-width: 500px) {
 
-    overflow-y: auto;
+            #main-content {
+                height: 65vh;
+                min-height: 430px;
+            }
 
-    font:
-        12px/1.4
-        monospace;
+            #log-panel {
+                height: 120px;
+            }
 
-    color: #aaa;
-}
+            #sidebar {
+                padding: 18px;
+            }
 
-
-.log-entry {
-
-    margin-bottom: 4px;
-}
-
-
-.log-entry.info {
-    color: #888;
-}
-
-
-.log-entry.success {
-    color: #4caf50;
-}
-
-
-.log-entry.error {
-    color: #f44336;
-}
-
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
-
-#sidebar {
-
-    width: 320px;
-
-    flex: none;
-
-    padding: 20px;
-
-    background: #121214;
-
-    border-left:
-        1px solid #2a2a30;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 16px;
-}
-
-
-/* Logo */
-
-.logo {
-
-    font-size: 24px;
-
-    font-weight: 700;
-
-    color: #76ff03;
-
-    text-align: center;
-}
-
-
-/* =========================================================
-   ACCOUNT
-========================================================= */
-
-.account-card {
-
-    background: #2a2a30;
-
-    padding: 15px;
-
-    border-radius: 8px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-}
-
-
-.avatar {
-
-    width: 40px;
-    height: 40px;
-
-    background: #444;
-
-    border-radius: 4px;
-
-    object-fit: cover;
-
-    image-rendering: pixelated;
-}
-
-
-.user-info {
-
-    display: flex;
-
-    flex-direction: column;
-
-    min-width: 0;
-}
-
-
-.username {
-
-    font-weight: bold;
-
-    font-size: 14px;
-}
-
-
-.status {
-
-    font-size: 12px;
-
-    color: #888;
-
-    margin-top: 3px;
-}
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-button {
-
-    width: 100%;
-
-    padding: 12px;
-
-    border: none;
-
-    border-radius: 6px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s,
-        opacity 0.2s;
-}
-
-
-.btn-login {
-
-    background: #0078d4;
-
-    color: white;
-}
-
-
-.btn-login:hover {
-
-    background: #005a9e;
-}
-
-
-.btn-launch {
-
-    background: #76ff03;
-
-    color: #000;
-
-    font-size: 18px;
-
-    margin-top: auto;
-}
-
-
-.btn-launch:hover {
-
-    background: #64dd17;
-}
-
-
-button:disabled {
-
-    background: #555;
-
-    color: #888;
-
-    cursor: not-allowed;
-}
-
-
-/* =========================================================
-   VERSION
-========================================================= */
-
-.version-group {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 6px;
-}
-
-
-.version-group label {
-
-    font-size: 12px;
-
-    color: #aaa;
-}
-
-
-select {
-
-    width: 100%;
-
-    padding: 10px;
-
-    background: #2a2a30;
-
-    color: white;
-
-    border:
-        1px solid #444;
-
-    border-radius: 4px;
-
-    outline: none;
-
-    cursor: pointer;
-}
-
-
-select:disabled {
-
-    cursor: wait;
-
-    opacity: 0.6;
-}
-
-
-/* =========================================================
-   UTILITY
-========================================================= */
-
-.hidden {
-
-    display: none !important;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 700px) {
-
-    body {
-
-        flex-direction: column;
-    }
-
-
-    #main-content {
-
-        min-height: 55vh;
-    }
-
-
-    #sidebar {
-
-        width: 100%;
-
-        max-height: 45vh;
-
-        height: auto;
-
-        padding: 12px;
-
-        gap: 9px;
-
-        overflow-y: auto;
-
-        border-left: none;
-
-        border-top:
-            1px solid #2a2a30;
-    }
-
-
-    .logo {
-
-        font-size: 19px;
-    }
-
-
-    .btn-launch {
-
-        margin-top: 4px;
-    }
-
-
-    #log-panel {
-
-        height: 90px;
-    }
-
-}
-
-</style>
+            .logo {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
 
-<!-- =========================================================
-     MAIN GAME AREA
-========================================================= -->
+    <main id="main-content">
 
-<div id="main-content">
+        <!-- GAME / IMAGE SCREEN -->
+        <section id="screen-container">
 
+            <img
+                id="gameImage"
+                src="images/minecraft-bg.jpg"
+                alt="Minecraft"
+            >
 
-    <!-- GAME SCREEN -->
+            <div id="game-overlay">
 
-    <div id="screen-container">
+                <div class="crosshair"></div>
 
-        <canvas
-            id="gameCanvas">
-        </canvas>
+                <div class="debug">
+                    MojoCraft Web
+                </div>
 
-
-        <!-- GAME HUD -->
-
-        <div
-            id="game-overlay"
-            class="hidden">
-
-            <div class="crosshair">
-                +
             </div>
 
-            <div class="debug">
+            <!-- LOADING -->
+            <div id="loading">
 
-                Web Minecraft Prototype
-                <br>
+                <div class="spinner"></div>
 
-                Renderer: Browser Canvas
+                <div id="loadingText">
+                    준비 중...
+                </div>
 
+                <div class="progress">
+                    <div id="progressBar"></div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- LOG -->
+        <section id="log-panel"></section>
+
+    </main>
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================= -->
+
+    <aside id="sidebar">
+
+        <!-- LOGO -->
+        <div class="logo">
+
+            <div class="logo-main">
+                MojoCraft
+            </div>
+
+            <div class="logo-sub">
+                Web Minecraft Launcher
             </div>
 
         </div>
 
 
-        <!-- LOADING -->
+        <!-- ACCOUNT -->
+        <div class="account-card">
 
-        <div
-            id="loading"
-            class="hidden">
+            <div class="avatar">
+                ⛏️
+            </div>
 
-            <div class="spinner"></div>
-
-
-            <h2 id="loadingTitle">
-
-                Minecraft 준비 중
-
-            </h2>
-
-
-            <p id="loadingText">
-
-                게임 환경을 초기화하고 있습니다...
-
-            </p>
-
-
-            <div class="progress">
+            <div class="user-info">
 
                 <div
-                    id="progressBar">
+                    id="username"
+                    class="username"
+                >
+                    로그인되지 않음
+                </div>
+
+                <div
+                    id="accountStatus"
+                    class="status"
+                >
+                    Microsoft 계정 필요
                 </div>
 
             </div>
 
         </div>
 
-    </div>
 
-
-    <!-- =====================================================
-         LOG
-    ====================================================== -->
-
-    <div id="log-panel">
-
-        <div class="log-entry info">
-
-            [시스템]
-            Web Minecraft Engine 초기화 중...
-
-        </div>
-
-
-        <div class="log-entry info">
-
-            [시스템]
-            브라우저 게임 화면 준비 완료.
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     SIDEBAR
-========================================================= -->
-
-<aside id="sidebar">
-
-
-    <!-- LOGO -->
-
-    <div class="logo">
-
-        Web Minecraft
-
-    </div>
-
-
-    <!-- ACCOUNT -->
-
-    <div class="account-card">
-
-
-        <img
-            id="avatar"
-            class="avatar"
-            alt="Minecraft Skin"
-
-            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23444'/%3E%3Crect x='8' y='6' width='24' height='24' fill='%2376ff03' opacity='.8'/%3E%3C/svg%3E"
+        <!-- LOGIN -->
+        <button
+            id="loginButton"
+            class="btn-login"
         >
+            Microsoft 로그인
+        </button>
 
 
-        <div class="user-info">
+        <div class="divider"></div>
 
 
-            <span
-                class="username"
-                id="username">
+        <!-- VERSION FILTER -->
+        <div class="version-group">
 
-                비로그인
+            <label for="versionFilter">
+                버전 종류
+            </label>
 
-            </span>
+            <select id="versionFilter">
 
+                <option value="release">
+                    Release
+                </option>
 
-            <span
-                class="status"
-                id="auth-status">
+                <option value="snapshot">
+                    Snapshot
+                </option>
 
-                Microsoft 계정 필요
+                <option value="all">
+                    전체
+                </option>
 
-            </span>
-
+            </select>
 
         </div>
 
 
-    </div>
+        <!-- VERSION -->
+        <div class="version-group">
 
+            <label for="versionSelect">
+                Minecraft Java Edition
+            </label>
 
-    <!-- MICROSOFT LOGIN -->
+            <select id="versionSelect">
 
-    <button
-        class="btn-login"
-        id="login-btn">
+                <option value="">
+                    버전 불러오는 중...
+                </option>
 
-        Microsoft 계정 로그인
+            </select>
 
-    </button>
+            <input
+                id="versionSearch"
+                type="text"
+                placeholder="버전 검색..."
+            >
 
+        </div>
 
-    <!-- VERSION FILTER -->
 
-    <div class="version-group">
+        <!-- LAUNCH -->
+        <button
+            id="launchButton"
+            class="btn-launch"
+        >
+            게임 실행
+        </button>
 
 
-        <label
-            for="version-type">
+        <div class="small-info">
 
-            버전 필터
+            현재 버전 목록은 Mojang의 공식
+            Minecraft Java Edition 버전 Manifest를
+            기준으로 불러옵니다.
 
-        </label>
+            <br>
+            <br>
 
+            ※ 현재 이 버전은 런처 UI 및 실행 프로토타입입니다.
+            실제 Java Minecraft 실행 엔진은 아직 연결되지 않았습니다.
 
-        <select
-            id="version-type">
+        </div>
 
+    </aside>
 
-            <option value="release">
 
-                정식 출시 버전 (Release)
+    <script>
 
-            </option>
+        /* =========================================
+           CONFIG
+        ========================================= */
 
+        const CLIENT_ID =
+            "YOUR_MICROSOFT_CLIENT_ID";
 
-            <option value="all">
+        const MOJANG_MANIFEST_URL =
+            "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json";
 
-                전체 버전
-                (Snapshot/Beta 포함)
 
-            </option>
+        /* =========================================
+           STATE
+        ========================================= */
 
+        let allVersions = [];
 
-            <option value="snapshot">
+        let currentFilter = "release";
 
-                스냅샷 (Snapshot)
+        let currentSearch = "";
 
-            </option>
+        let selectedVersion = null;
 
 
-        </select>
+        /* =========================================
+           ELEMENTS
+        ========================================= */
 
+        const versionSelect =
+            document.getElementById("versionSelect");
 
-    </div>
+        const versionFilter =
+            document.getElementById("versionFilter");
 
+        const versionSearch =
+            document.getElementById("versionSearch");
 
-    <!-- MINECRAFT VERSION -->
+        const launchButton =
+            document.getElementById("launchButton");
 
-    <div class="version-group">
+        const loginButton =
+            document.getElementById("loginButton");
 
+        const loading =
+            document.getElementById("loading");
 
-        <label
-            for="java-version">
+        const loadingText =
+            document.getElementById("loadingText");
 
-            자바 마인크래프트 버전 선택
+        const progressBar =
+            document.getElementById("progressBar");
 
-        </label>
+        const logPanel =
+            document.getElementById("log-panel");
 
+        const username =
+            document.getElementById("username");
 
-        <select
-            id="java-version"
-            disabled>
+        const accountStatus =
+            document.getElementById("accountStatus");
 
-            <option>
 
-                버전 불러오는 중...
+        /* =========================================
+           LOG
+        ========================================= */
 
-            </option>
-
-        </select>
-
-
-    </div>
-
-
-    <!-- LAUNCH -->
-
-    <button
-        class="btn-launch"
-        id="launch-btn"
-        disabled>
-
-        게임 실행
-
-    </button>
-
-
-</aside>
-
-
-<script>
-
-/* ============================================================
-   CONFIGURATION
-============================================================ */
-
-
-/*
-    실제 Microsoft 로그인을 연결할 때
-    Azure / Microsoft Entra 앱의 Client ID를 입력합니다.
-
-    현재 프로토타입에서는 비워 둡니다.
-*/
-
-const CLIENT_ID =
-    "YOUR_MICROSOFT_CLIENT_ID";
-
-
-/*
-    Mojang 공식 Minecraft 버전 Manifest
-*/
-
-const MOJANG_MANIFEST_URL =
-    "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json";
-
-
-/*
-    전체 버전 목록
-*/
-
-let allVersions = [];
-
-
-/*
-    게임 상태
-*/
-
-const gameState = {
-
-    running: false,
-
-    selectedVersion: null
-
-};
-
-
-/* ============================================================
-   ELEMENTS
-============================================================ */
-
-const canvas =
-    document.getElementById(
-        "gameCanvas"
-    );
-
-
-const ctx =
-    canvas.getContext(
-        "2d"
-    );
-
-
-const loading =
-    document.getElementById(
-        "loading"
-    );
-
-
-const overlay =
-    document.getElementById(
-        "game-overlay"
-    );
-
-
-const progressBar =
-    document.getElementById(
-        "progressBar"
-    );
-
-
-const loadingTitle =
-    document.getElementById(
-        "loadingTitle"
-    );
-
-
-const loadingText =
-    document.getElementById(
-        "loadingText"
-    );
-
-
-const logPanel =
-    document.getElementById(
-        "log-panel"
-    );
-
-
-const launchButton =
-    document.getElementById(
-        "launch-btn"
-    );
-
-
-const loginButton =
-    document.getElementById(
-        "login-btn"
-    );
-
-
-const versionFilter =
-    document.getElementById(
-        "version-type"
-    );
-
-
-const versionSelect =
-    document.getElementById(
-        "java-version"
-    );
-
-
-/* ============================================================
-   LOG SYSTEM
-============================================================ */
-
-function log(
-    message,
-    type = "info"
-) {
-
-    const entry =
-        document.createElement(
-            "div"
-        );
-
-
-    entry.className =
-        "log-entry " + type;
-
-
-    entry.textContent =
-        "[" +
-        new Date().toLocaleTimeString() +
-        "] " +
-        message;
-
-
-    logPanel.appendChild(
-        entry
-    );
-
-
-    logPanel.scrollTop =
-        logPanel.scrollHeight;
-
-}
-
-
-/* ============================================================
-   CANVAS RESIZE
-============================================================ */
-
-function resizeCanvas() {
-
-    const dpr =
-        Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
-
-
-    const rect =
-        canvas.getBoundingClientRect();
-
-
-    canvas.width =
-        rect.width * dpr;
-
-
-    canvas.height =
-        rect.height * dpr;
-
-
-    ctx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-
-
-    drawPrototypeWorld();
-
-}
-
-
-/* ============================================================
-   PROTOTYPE WORLD
-============================================================ */
-
-function drawPrototypeWorld() {
-
-    const width =
-        canvas.clientWidth;
-
-
-    const height =
-        canvas.clientHeight;
-
-
-    if (
-        !width ||
-        !height
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-        SKY
-    */
-
-    const sky =
-        ctx.createLinearGradient(
-            0,
-            0,
-            0,
-            height
-        );
-
-
-    sky.addColorStop(
-        0,
-        "#6db5e4"
-    );
-
-
-    sky.addColorStop(
-        1,
-        "#c4e7ff"
-    );
-
-
-    ctx.fillStyle =
-        sky;
-
-
-    ctx.fillRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    /*
-        GROUND
-    */
-
-    const groundY =
-        height * 0.65;
-
-
-    ctx.fillStyle =
-        "#4b913b";
-
-
-    ctx.fillRect(
-        0,
-        groundY,
-        width,
-        height - groundY
-    );
-
-
-    /*
-        BLOCKS
-    */
-
-    const blockSize =
-        40;
-
-
-    for (
-        let x = 0;
-        x < width;
-        x += blockSize
-    ) {
-
-        ctx.fillStyle =
-            (x / blockSize) % 2 === 0
-                ? "#438533"
-                : "#4b913b";
-
-
-        ctx.fillRect(
-            x,
-            groundY,
-            blockSize,
-            blockSize
-        );
-
-    }
-
-
-    /*
-        SUN
-    */
-
-    ctx.fillStyle =
-        "#fff0a0";
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        width * 0.8,
-        height * 0.2,
-        42,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fill();
-
-
-    /*
-        TREE
-    */
-
-    const treeX =
-        width * 0.25;
-
-
-    const treeY =
-        groundY - 125;
-
-
-    ctx.fillStyle =
-        "#70462c";
-
-
-    ctx.fillRect(
-        treeX,
-        treeY + 55,
-        34,
-        100
-    );
-
-
-    ctx.fillStyle =
-        "#286b2e";
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        treeX + 17,
-        treeY + 48,
-        65,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fill();
-
-}
-
-
-/* ============================================================
-   VERSION MANIFEST
-============================================================ */
-
-async function fetchVersionManifest() {
-
-    log(
-        "Mojang Minecraft 버전 Manifest 요청 중...",
-        "info"
-    );
-
-
-    try {
-
-        const response =
-            await fetch(
-                MOJANG_MANIFEST_URL
-            );
-
-
-        if (
-            !response.ok
+        function log(
+            message,
+            type = "info"
         ) {
 
-            throw new Error(
-                "HTTP " +
-                response.status
-            );
+            const entry =
+                document.createElement("div");
 
+            entry.className =
+                "log-entry " + type;
+
+            const time =
+                new Date().toLocaleTimeString();
+
+            entry.textContent =
+                `[${time}] ${message}`;
+
+            logPanel.appendChild(entry);
+
+            logPanel.scrollTop =
+                logPanel.scrollHeight;
         }
 
 
-        const data =
-            await response.json();
+        /* =========================================
+           LOADING
+        ========================================= */
 
+        function setLoading(
+            visible,
+            text = "",
+            progress = 0
+        ) {
 
-        allVersions =
-            data.versions || [];
+            if (visible) {
 
+                loading.classList.add("show");
 
-        log(
-            "Minecraft 버전 " +
-            allVersions.length +
-            "개 수신 완료.",
-            "success"
-        );
+                loadingText.textContent =
+                    text;
 
+                progressBar.style.width =
+                    `${progress}%`;
 
-        filterVersions();
+            } else {
 
+                loading.classList.remove("show");
 
-        versionSelect.disabled =
-            false;
-
-
-    }
-
-    catch (error) {
-
-        log(
-            "버전 API 요청 실패: " +
-            error.message,
-            "error"
-        );
-
-
-        /*
-            API가 브라우저 환경에서 실패하더라도
-            프로토타입을 실행할 수 있도록
-            기본 버전을 제공합니다.
-        */
-
-        allVersions = [
-
-            {
-                id: "1.21.8",
-                type: "release"
-            },
-
-            {
-                id: "1.21.7",
-                type: "release"
-            },
-
-            {
-                id: "1.20.1",
-                type: "release"
-            },
-
-            {
-                id: "1.19.4",
-                type: "release"
             }
-
-        ];
-
-
-        filterVersions();
+        }
 
 
-        versionSelect.disabled =
-            false;
+        /* =========================================
+           FETCH VERSION MANIFEST
+        ========================================= */
 
-    }
+        async function fetchVersionManifest() {
 
-}
+            log(
+                "Minecraft 버전 목록을 불러오는 중..."
+            );
 
+            try {
 
-/* ============================================================
-   VERSION FILTER
-============================================================ */
+                const response =
+                    await fetch(
+                        MOJANG_MANIFEST_URL,
+                        {
+                            cache: "no-store"
+                        }
+                    );
 
-function filterVersions() {
+                if (!response.ok) {
 
-    const filter =
-        versionFilter.value;
-
-
-    versionSelect.innerHTML =
-        "";
-
-
-    const filtered =
-        allVersions.filter(
-            version => {
-
-                if (
-                    filter === "all"
-                ) {
-
-                    return true;
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
 
                 }
 
+                const data =
+                    await response.json();
 
-                return (
-                    version.type ===
-                    filter
+                if (
+                    !data.versions ||
+                    !Array.isArray(data.versions)
+                ) {
+
+                    throw new Error(
+                        "버전 목록 형식이 올바르지 않습니다."
+                    );
+
+                }
+
+                allVersions =
+                    data.versions;
+
+                log(
+                    `${allVersions.length}개의 Minecraft 버전을 불러왔습니다.`,
+                    "success"
                 );
+
+                renderVersions();
+
+            } catch (error) {
+
+                console.error(error);
+
+                log(
+                    "공식 버전 목록을 불러오지 못했습니다.",
+                    "error"
+                );
+
+                /*
+                 * 네트워크 오류가 발생했을 때
+                 * 화면 자체가 완전히 비어버리지 않도록
+                 * 기본 버전 몇 개만 표시합니다.
+                 */
+
+                allVersions = [
+
+                    {
+                        id: "26.1.2",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21.8",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21.7",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21.6",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21.5",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21.4",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21.3",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21.2",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21.1",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.21",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.20.1",
+                        type: "release"
+                    },
+
+                    {
+                        id: "1.19.4",
+                        type: "release"
+                    }
+
+                ];
+
+                renderVersions();
+            }
+        }
+
+
+        /* =========================================
+           RENDER VERSION LIST
+        ========================================= */
+
+        function renderVersions() {
+
+            versionSelect.innerHTML = "";
+
+            let filtered =
+                allVersions.filter(
+                    version => {
+
+                        /*
+                         * 종류 필터
+                         */
+
+                        if (
+                            currentFilter !== "all" &&
+                            version.type !== currentFilter
+                        ) {
+
+                            return false;
+
+                        }
+
+                        /*
+                         * 검색 필터
+                         */
+
+                        if (
+                            currentSearch &&
+                            !version.id
+                                .toLowerCase()
+                                .includes(
+                                    currentSearch.toLowerCase()
+                                )
+                        ) {
+
+                            return false;
+
+                        }
+
+                        return true;
+                    }
+                );
+
+
+            if (filtered.length === 0) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = "";
+
+                option.textContent =
+                    "검색 결과 없음";
+
+                versionSelect.appendChild(
+                    option
+                );
+
+                selectedVersion = null;
+
+                return;
+            }
+
+
+            /*
+             * 최신 버전을 위쪽에 표시
+             *
+             * Mojang Manifest 자체가
+             * 최신순으로 제공하지만,
+             * 여기서는 안전하게 날짜를 기준으로
+             * 다시 정렬합니다.
+             */
+
+            filtered.sort(
+                (a, b) => {
+
+                    const dateA =
+                        new Date(
+                            a.releaseTime || 0
+                        );
+
+                    const dateB =
+                        new Date(
+                            b.releaseTime || 0
+                        );
+
+                    return dateB - dateA;
+                }
+            );
+
+
+            for (const version of filtered) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    version.id;
+
+                option.textContent =
+                    `${version.id} (${version.type})`;
+
+                versionSelect.appendChild(
+                    option
+                );
+
+            }
+
+
+            selectedVersion =
+                filtered[0];
+
+            versionSelect.value =
+                selectedVersion.id;
+
+
+            log(
+                `현재 표시된 버전: ${filtered.length}개`
+            );
+        }
+
+
+        /* =========================================
+           VERSION FILTER
+        ========================================= */
+
+        versionFilter.addEventListener(
+            "change",
+            () => {
+
+                currentFilter =
+                    versionFilter.value;
+
+                renderVersions();
 
             }
         );
 
 
-    filtered.forEach(
-        version => {
+        /* =========================================
+           VERSION SEARCH
+        ========================================= */
 
-            const option =
-                document.createElement(
-                    "option"
+        versionSearch.addEventListener(
+            "input",
+            () => {
+
+                currentSearch =
+                    versionSearch.value.trim();
+
+                renderVersions();
+
+            }
+        );
+
+
+        /* =========================================
+           VERSION SELECT
+        ========================================= */
+
+        versionSelect.addEventListener(
+            "change",
+            () => {
+
+                const id =
+                    versionSelect.value;
+
+                selectedVersion =
+                    allVersions.find(
+                        version =>
+                            version.id === id
+                    ) || null;
+
+                if (selectedVersion) {
+
+                    log(
+                        `선택한 버전: ${selectedVersion.id}`
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           MICROSOFT LOGIN
+        ========================================= */
+
+        function startMicrosoftLogin() {
+
+            /*
+             * 주의:
+             *
+             * Microsoft OAuth의 client secret을
+             * 브라우저 코드에 넣으면 안 됩니다.
+             *
+             * 실제 로그인 구현에서는
+             * Authorization Code + PKCE 방식을
+             * 사용해야 합니다.
+             */
+
+            if (
+                !CLIENT_ID ||
+                CLIENT_ID ===
+                "YOUR_MICROSOFT_CLIENT_ID"
+            ) {
+
+                log(
+                    "Microsoft Client ID가 아직 설정되지 않았습니다.",
+                    "warning"
                 );
 
+                alert(
+                    "먼저 Microsoft Entra에서 Client ID를 설정해야 합니다."
+                );
 
-            option.value =
-                version.id;
-
-
-            option.textContent =
-                version.id +
-                " (" +
-                version.type +
-                ")";
+                return;
+            }
 
 
-            option.dataset.jsonUrl =
-                version.url || "";
+            const redirectUri =
+                window.location.origin +
+                window.location.pathname;
 
 
-            versionSelect.appendChild(
-                option
+            const params =
+                new URLSearchParams({
+
+                    client_id:
+                        CLIENT_ID,
+
+                    response_type:
+                        "code",
+
+                    redirect_uri:
+                        redirectUri,
+
+                    response_mode:
+                        "query",
+
+                    scope:
+                        "XboxLive.signin offline_access",
+
+                    code_challenge:
+                        "PKCE_CODE_CHALLENGE",
+
+                    code_challenge_method:
+                        "S256"
+
+                });
+
+
+            const authUrl =
+                "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?" +
+                params.toString();
+
+
+            log(
+                "Microsoft 로그인 페이지로 이동합니다..."
+            );
+
+            window.location.href =
+                authUrl;
+        }
+
+
+        loginButton.addEventListener(
+            "click",
+            startMicrosoftLogin
+        );
+
+
+        /* =========================================
+           SIMULATED LAUNCH
+        ========================================= */
+
+        function sleep(ms) {
+
+            return new Promise(
+                resolve =>
+                    setTimeout(resolve, ms)
             );
 
         }
-    );
 
 
-    if (
-        filtered.length > 0
-    ) {
+        async function launchGame() {
 
-        versionSelect.value =
-            filtered[0].id;
+            if (!selectedVersion) {
 
-    }
+                alert(
+                    "Minecraft 버전을 선택해주세요."
+                );
 
-}
-
-
-versionFilter.addEventListener(
-    "change",
-    filterVersions
-);
+                return;
+            }
 
 
-/* ============================================================
-   MICROSOFT LOGIN
-============================================================ */
+            /*
+             * 현재는 실제 Java 실행이 아니라
+             * 런처 동작을 보여주는 프로토타입입니다.
+             */
 
-function startMicrosoftLogin() {
+            launchButton.disabled =
+                true;
 
-    /*
-        Client ID가 아직 설정되지 않은 경우
-    */
+            loginButton.disabled =
+                true;
 
-    if (
-        !CLIENT_ID ||
-        CLIENT_ID ===
-        "YOUR_MICROSOFT_CLIENT_ID"
-    ) {
 
-        log(
-            "Microsoft Client ID가 설정되지 않았습니다.",
-            "error"
+            setLoading(
+                true,
+                "Minecraft 실행 준비 중...",
+                5
+            );
+
+
+            log(
+                `Minecraft ${selectedVersion.id} 실행 준비`,
+                "info"
+            );
+
+            await sleep(500);
+
+
+            setLoading(
+                true,
+                "버전 정보 확인 중...",
+                20
+            );
+
+            log(
+                "Minecraft 버전 정보 확인"
+            );
+
+            await sleep(600);
+
+
+            setLoading(
+                true,
+                "라이브러리 확인 중...",
+                40
+            );
+
+            log(
+                "Minecraft 라이브러리 확인"
+            );
+
+            await sleep(600);
+
+
+            setLoading(
+                true,
+                "게임 리소스 준비 중...",
+                60
+            );
+
+            log(
+                "게임 리소스 준비"
+            );
+
+            await sleep(600);
+
+
+            setLoading(
+                true,
+                "Java 실행 환경 준비 중...",
+                80
+            );
+
+            log(
+                "Java 실행 환경 준비"
+            );
+
+            await sleep(700);
+
+
+            setLoading(
+                true,
+                "Minecraft 시작 중...",
+                100
+            );
+
+            log(
+                "Minecraft 시작 요청",
+                "success"
+            );
+
+            await sleep(800);
+
+
+            setLoading(
+                false
+            );
+
+
+            launchButton.disabled =
+                false;
+
+            loginButton.disabled =
+                false;
+
+
+            log(
+                "현재는 UI 프로토타입입니다. 실제 Minecraft Java 엔진은 아직 연결되지 않았습니다.",
+                "warning"
+            );
+
+        }
+
+
+        launchButton.addEventListener(
+            "click",
+            launchGame
         );
 
 
-        log(
-            "Azure / Microsoft Entra 앱 등록 후 CLIENT_ID를 입력하세요.",
-            "info"
+        /* =========================================
+           STARTUP
+        ========================================= */
+
+        async function startup() {
+
+            log(
+                "MojoCraft Web Launcher 시작"
+            );
+
+            log(
+                "웹 런처 초기화 중..."
+            );
+
+            await fetchVersionManifest();
+
+            log(
+                "런처 초기화 완료",
+                "success"
+            );
+
+        }
+
+
+        /* =========================================
+           START
+        ========================================= */
+
+        window.addEventListener(
+            "load",
+            startup
         );
 
-
-        return;
-
-    }
-
-
-    const redirectUri =
-        window.location.origin +
-        window.location.pathname;
-
-
-    const scope =
-        encodeURIComponent(
-            "openid profile offline_access XboxLive.signin"
-        );
-
-
-    const authUrl =
-        "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize" +
-
-        "?client_id=" +
-        encodeURIComponent(
-            CLIENT_ID
-        ) +
-
-        "&response_type=code" +
-
-        "&redirect_uri=" +
-        encodeURIComponent(
-            redirectUri
-        ) +
-
-        "&response_mode=query" +
-
-        "&scope=" +
-        scope;
-
-
-    log(
-        "Microsoft OAuth 로그인 페이지로 이동합니다.",
-        "info"
-    );
-
-
-    window.location.href =
-        authUrl;
-
-}
-
-
-loginButton.addEventListener(
-    "click",
-    startMicrosoftLogin
-);
-
-
-/* ============================================================
-   LOADING
-============================================================ */
-
-function sleep(ms) {
-
-    return new Promise(
-        resolve =>
-
-            setTimeout(
-                resolve,
-                ms
-            )
-
-    );
-
-}
-
-
-function setLoading(
-    percent,
-    title,
-    message
-) {
-
-    progressBar.style.width =
-        percent + "%";
-
-
-    loadingTitle.textContent =
-        title;
-
-
-    loadingText.textContent =
-        message;
-
-}
-
-
-/* ============================================================
-   GAME LAUNCH
-============================================================ */
-
-async function launchGame() {
-
-    const selectedVersion =
-        versionSelect.value;
-
-
-    if (
-        !selectedVersion
-    ) {
-
-        log(
-            "Minecraft 버전을 선택하세요.",
-            "error"
-        );
-
-
-        return;
-
-    }
-
-
-    gameState.selectedVersion =
-        selectedVersion;
-
-
-    gameState.running =
-        false;
-
-
-    launchButton.disabled =
-        true;
-
-
-    loading.classList.remove(
-        "hidden"
-    );
-
-
-    overlay.classList.add(
-        "hidden"
-    );
-
-
-    log(
-        "[" +
-        selectedVersion +
-        "] 게임 실행 준비 시작.",
-        "info"
-    );
-
-
-    /*
-        실행 준비 단계
-    */
-
-    const steps = [
-
-        [
-            10,
-            "브라우저 확인",
-            "WebAssembly 환경 확인 중..."
-        ],
-
-        [
-            25,
-            "그래픽 초기화",
-            "Canvas / WebGL 렌더러 준비 중..."
-        ],
-
-        [
-            45,
-            "파일 시스템",
-            "브라우저 저장 공간 준비 중..."
-        ],
-
-        [
-            65,
-            "Java Runtime",
-            "브라우저용 Java Runtime 준비 중..."
-        ],
-
-        [
-            82,
-            "Minecraft",
-            "Minecraft " +
-            selectedVersion +
-            " 실행 환경 준비 중..."
-        ],
-
-        [
-            100,
-            "완료",
-            "게임 화면을 준비했습니다."
-        ]
-
-    ];
-
-
-    for (
-        const step of steps
-    ) {
-
-        setLoading(
-            step[0],
-            step[1],
-            step[2]
-        );
-
-
-        await sleep(
-            400
-        );
-
-    }
-
-
-    loading.classList.add(
-        "hidden"
-    );
-
-
-    overlay.classList.remove(
-        "hidden"
-    );
-
-
-    gameState.running =
-        true;
-
-
-    launchButton.disabled =
-        false;
-
-
-    log(
-        "[" +
-        selectedVersion +
-        "] 브라우저 게임 화면 실행 완료.",
-        "success"
-    );
-
-
-    log(
-        "현재 화면은 실제 Minecraft JVM 연결 전 프로토타입입니다.",
-        "info"
-    );
-
-}
-
-
-/* ============================================================
-   EVENTS
-============================================================ */
-
-launchButton.addEventListener(
-    "click",
-    launchGame
-);
-
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
-
-
-/* ============================================================
-   STARTUP
-============================================================ */
-
-async function startup() {
-
-    resizeCanvas();
-
-
-    log(
-        "Web Minecraft Launcher 시작.",
-        "success"
-    );
-
-
-    log(
-        "브라우저 환경 확인 완료.",
-        "info"
-    );
-
-
-    await fetchVersionManifest();
-
-}
-
-
-window.addEventListener(
-    "load",
-    startup
-);
-
-</script>
+    </script>
 
 </body>
 </html>
