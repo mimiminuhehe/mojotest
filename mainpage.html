@@ -168,7 +168,7 @@ html, body {
     </div>
 
     <section class="actions">
-        <button id="prep-btn" class="action-btn" onclick="prepareFiles()">1. 리소스 다운로드</button>
+        <button id="prep-btn" class="action-btn" onclick="prepareFiles()">1. 리소스 직접 다운로드</button>
         <button id="launch-btn" class="action-btn btn-launch" onclick="launchJavaMinecraft()" disabled>2. 게임 실행</button>
     </section>
 
@@ -183,26 +183,6 @@ html, body {
 const launchParams = new URLSearchParams(window.location.search);
 const LAUNCH_VERSION = launchParams.get("version") || "1.12.2";
 const LAUNCH_JSON_URL = launchParams.get("json");
-
-/* 여러 프록시 후보를 번갈아 시도하는 fetch 함수 */
-async function fetchWithFallback(targetUrl) {
-    const proxies = [
-        url => url, // 1순위: 직접 요청 (CORS 제한 해제 브라우저용)
-        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
-    ];
-
-    for (let i = 0; i < proxies.length; i++) {
-        try {
-            const proxied = proxies[i](targetUrl);
-            const res = await fetch(proxied);
-            if (res.ok) return res;
-        } catch (e) {
-            console.warn(`프록시 ${i + 1}번 실패, 다음 시도...`);
-        }
-    }
-    throw new Error("모든 다운로드 경로 요청에 실패했습니다.");
-}
 
 let currentVersionData = null;
 let isReadyToLaunch = false;
@@ -224,38 +204,53 @@ function updateOverlay(text, show = true) {
     overlay.style.display = show ? "flex" : "none";
 }
 
+/* =========================================================
+   1. Mojang 서버에서 직접 다운로드 (프록시 제거)
+========================================================= */
 async function prepareFiles() {
-    log(`[시스템] ${LAUNCH_VERSION} 리소스 다운로드를 시작합니다.`, "info");
+    log(`[시스템] ${LAUNCH_VERSION} 리소스 직접 다운로드를 시작합니다.`, "info");
     updateOverlay("버전 메타데이터 다운로드 중...");
 
     try {
         let versionJsonUrl = LAUNCH_JSON_URL;
 
+        // 전달받은 JSON URL이 없다면 Mojang 공식 Manifest에서 검색
         if (!versionJsonUrl) {
-            log("공식 Manifest 검색 중...", "info");
+            log("Mojang 공식 Manifest 검색 중...", "info");
             const manifestUrl = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
-            const manifestRes = await fetchWithFallback(manifestUrl);
-            const manifestData = await manifestRes.json();
             
+            const manifestRes = await fetch(manifestUrl);
+            if (!manifestRes.ok) throw new Error(`Manifest 요청 실패 (HTTP ${manifestRes.status})`);
+            
+            const manifestData = await manifestRes.json();
             const versionObj = manifestData.versions.find(v => v.id === LAUNCH_VERSION);
-            if (!versionObj) throw new Error(`${LAUNCH_VERSION} 버전을 찾지 못했습니다.`);
+            
+            if (!versionObj) throw new Error(`${LAUNCH_VERSION} 버전을 Manifest에서 찾지 못했습니다.`);
             versionJsonUrl = versionObj.url;
         }
 
-        log(`Version JSON 요청 중...`, "info");
-        const versionRes = await fetchWithFallback(versionJsonUrl);
+        // 1. Mojang 서버에서 version.json 직접 수신
+        log(`Version JSON 직접 요청: ${versionJsonUrl}`, "info");
+        const versionRes = await fetch(versionJsonUrl);
+        if (!versionRes.ok) throw new Error(`Version JSON 요청 실패 (HTTP ${versionRes.status})`);
+        
         currentVersionData = await versionRes.json();
         log("Version.json 읽기 완료!", "success");
 
         updateOverlay("Client JAR 다운로드 중...");
         
+        // 2. Client JAR URL 확인
         const clientJarUrl = currentVersionData.downloads?.client?.url;
         if (!clientJarUrl) throw new Error("Client JAR 다운로드 링크가 없습니다.");
 
-        log(`Client JAR 받아오는 중...`, "info");
-        const jarRes = await fetchWithFallback(clientJarUrl);
+        // 3. Mojang 서버에서 Client JAR 바이너리 직접 수신
+        log(`Client JAR 직접 요청 중...`, "info");
+        const jarRes = await fetch(clientJarUrl);
+        if (!jarRes.ok) throw new Error(`Client JAR 다운로드 실패 (HTTP ${jarRes.status})`);
+
         const jarData = await jarRes.arrayBuffer();
         
+        // 4. Cache Storage에 저장
         if ('caches' in window) {
             const cache = await caches.open("mojocraft-runtime");
             const responseToCache = new Response(jarData, {
@@ -277,6 +272,9 @@ async function prepareFiles() {
     }
 }
 
+/* =========================================================
+   2. CheerpJ JVM 구동
+========================================================= */
 async function launchJavaMinecraft() {
     if (!isReadyToLaunch) return;
 
