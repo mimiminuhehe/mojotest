@@ -30,7 +30,6 @@ html, body {
     padding: 20px;
 }
 
-/* 헤더 */
 .header {
     display: flex;
     justify-content: space-between;
@@ -55,7 +54,6 @@ html, body {
 
 .back-btn:hover { background: #2c2c31; }
 
-/* 게임 캔버스 컨테이너 */
 #game-container {
     position: relative;
     width: 100%;
@@ -75,7 +73,6 @@ html, body {
     height: 100% !important;
 }
 
-/* 상태 표시 오버레이 */
 .game-overlay {
     position: absolute;
     inset: 0;
@@ -94,7 +91,6 @@ html, body {
     color: #76ff03;
 }
 
-/* 실행 제어 버튼 */
 .actions {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -122,7 +118,6 @@ html, body {
 }
 .btn-launch:hover:not(:disabled) { background: #8cff35; }
 
-/* 엔진 로그 패널 */
 .log-card {
     background: #0d0d0f;
     border: 1px solid #29292e;
@@ -165,7 +160,6 @@ html, body {
         <button class="back-btn" onclick="goBack()">← 런처로 돌아가기</button>
     </header>
 
-    <!-- 1. 게임 실행 화면 (Canvas) -->
     <div id="game-container">
         <div id="game-overlay" class="game-overlay">
             <div id="overlay-status" class="progress-text">버튼을 눌러 리소스를 다운로드하세요.</div>
@@ -173,13 +167,11 @@ html, body {
         <div id="cheerpjDisplay"></div>
     </div>
 
-    <!-- 2. 다운로드 및 시작 제어 -->
     <section class="actions">
         <button id="prep-btn" class="action-btn" onclick="prepareFiles()">1. 리소스 다운로드</button>
         <button id="launch-btn" class="action-btn btn-launch" onclick="launchJavaMinecraft()" disabled>2. 게임 실행</button>
     </section>
 
-    <!-- 3. 로그 콘솔 -->
     <section class="log-card">
         <div class="log-header">Engine Log</div>
         <div id="log"></div>
@@ -188,14 +180,15 @@ html, body {
 </div>
 
 <script>
-/* 파라미터 수신 */
 const launchParams = new URLSearchParams(window.location.search);
 const LAUNCH_VERSION = launchParams.get("version") || "1.12.2";
 const LAUNCH_JSON_URL = launchParams.get("json");
 const LAUNCH_USERNAME = launchParams.get("username") || "Player";
 
-/* CORS 프록시 설정 (기본 프록시 연결 문제 시 대체 주소 활용) */
-const CORS_PROXY = "https://corsproxy.io/?";
+/* 안정적인 CORS 프록시 우회 함수 */
+function getProxiedUrl(url) {
+    return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+}
 
 let currentVersionData = null;
 let isReadyToLaunch = false;
@@ -218,59 +211,69 @@ function updateOverlay(text, show = true) {
 }
 
 /* =========================================================
-   1. Client 및 Manifest 실제 다운로드 파이프라인
+   1. Client 및 Manifest 다운로드 (CORS 오류 수정)
 ========================================================= */
 async function prepareFiles() {
-    log(`[시스템] ${LAUNCH_VERSION} 리소스 받기를 시작합니다.`, "info");
+    log(`[시스템] ${LAUNCH_VERSION} 리소스 다운로드를 시작합니다.`, "info");
     updateOverlay("버전 메타데이터 다운로드 중...");
 
     try {
-        let jsonUrl = LAUNCH_JSON_URL;
-        if (!jsonUrl) {
-            jsonUrl = `https://piston-meta.mojang.com/mc/game/version_manifest_v2.json`;
+        let versionJsonUrl = LAUNCH_JSON_URL;
+
+        // 전달받은 JSON URL이 없다면 공식 Manifest에서 검색
+        if (!versionJsonUrl) {
+            log("공식 Manifest에서 버전 정보 경로 검색 중...", "info");
+            const manifestUrl = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
+            
+            const manifestRes = await fetch(getProxiedUrl(manifestUrl));
+            if (!manifestRes.ok) throw new Error(`Manifest 불러오기 실패 (HTTP ${manifestRes.status})`);
+            
+            const manifestData = await manifestRes.json();
+            const versionObj = manifestData.versions.find(v => v.id === LAUNCH_VERSION);
+            
+            if (!versionObj) throw new Error(`${LAUNCH_VERSION} 버전을 Manifest에서 찾지 못했습니다.`);
+            versionJsonUrl = versionObj.url;
         }
 
-        // 1. Version Manifest 로드
-        const targetUrl = CORS_PROXY + encodeURIComponent(jsonUrl);
-        const response = await fetch(targetUrl);
-        if (!response.ok) throw new Error("Manifest 요청 실패");
+        // 1. 해당 버전의 version.json 가져오기
+        log(`Version JSON 요청: ${versionJsonUrl}`, "info");
+        const versionRes = await fetch(getProxiedUrl(versionJsonUrl));
+        if (!versionRes.ok) throw new Error(`Version JSON 요청 실패 (HTTP ${versionRes.status})`);
         
-        currentVersionData = await response.json();
-        log("Version.json 읽기 성공", "success");
+        currentVersionData = await versionRes.json();
+        log("Version.json 읽기 완료!", "success");
 
         updateOverlay("Client JAR 다운로드 중...");
         
-        // 2. Client JAR URL 확인
+        // 2. Client JAR URL 추출
         const clientJarUrl = currentVersionData.downloads?.client?.url;
-        if (!clientJarUrl) {
-            throw new Error("Client JAR 다운로드 경로를 찾을 수 없습니다.");
-        }
+        if (!clientJarUrl) throw new Error("Client JAR 다운로드 링크가 없습니다.");
 
-        // 3. Client JAR 실제 바이너리 받기
-        const clientTarget = CORS_PROXY + encodeURIComponent(clientJarUrl);
-        const jarRes = await fetch(clientTarget);
-        if (!jarRes.ok) throw new Error(`Client 파일 다운로드 실패 (HTTP ${jarRes.status})`);
+        // 3. Client JAR 다운로드
+        log(`Client JAR 받아오는 중: ${clientJarUrl}`, "info");
+        const jarRes = await fetch(getProxiedUrl(clientJarUrl));
+        if (!jarRes.ok) throw new Error(`Client JAR 다운로드 실패 (HTTP ${jarRes.status})`);
 
         const jarData = await jarRes.arrayBuffer();
         
-        // 4. Cache Storage에 파일 저장
+        // 4. Cache Storage에 파일 보관
         if ('caches' in window) {
             const cache = await caches.open("mojocraft-runtime");
             const responseToCache = new Response(jarData, {
                 headers: { 'Content-Type': 'application/java-archive' }
             });
             await cache.put('/app/minecraft.jar', responseToCache);
-            log("Cache Storage에 Client JAR 저장 완료", "success");
+            log("Cache Storage에 Client JAR 저장 완료!", "success");
         }
 
-        log(`Client JAR 다운로드 완료 (${(jarData.byteLength / 1024 / 1024).toFixed(1)} MB)`, "success");
+        log(`Client JAR 준비 성공 (${(jarData.byteLength / 1024 / 1024).toFixed(1)} MB)`, "success");
 
         updateOverlay("파일 준비 완료! '게임 실행' 버튼을 누르세요.", true);
         document.getElementById("launch-btn").disabled = false;
         isReadyToLaunch = true;
 
     } catch (err) {
-        log(`다운로드 에러: ${err.message}`, "error");
+        log(`[에러] ${err.message}`, "error");
         updateOverlay(`준비 실패: ${err.message}`);
     }
 }
@@ -285,7 +288,6 @@ async function launchJavaMinecraft() {
     updateOverlay("CheerpJ 자바 엔진 초기화 중...");
 
     try {
-        // CheerpJ 초기화
         await cheerpjInit({
             displayContainer: document.getElementById("cheerpjDisplay")
         });
@@ -293,7 +295,6 @@ async function launchJavaMinecraft() {
         log("JVM 초기화 완료! 마인크래프트 실행 중...", "success");
         updateOverlay("", false);
 
-        // 자바 실행 파일 지정 구동
         await cheerpjRunLibrary("/app/minecraft.jar");
 
     } catch (error) {
